@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pnpm dlx *)",
+      "Bash(npm view *)",
+      "Bash(pnpm config *)",
+      "Bash(pnpm view *)",
+      "Bash(pnpm cache *)",
+      "Bash(pnpm add *)"
+    ]
+  }
+}
