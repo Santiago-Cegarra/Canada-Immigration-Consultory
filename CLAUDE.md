@@ -144,6 +144,14 @@ Crear cada carpeta cuando haga falta, no por adelantado.
 
 ## Flujo de trabajo
 
+- **PROHIBIDO hacer commits.** El control de versiones lo maneja
+  exclusivamente el usuario. Claude no ejecuta `git commit`, `git init`,
+  `push`, `merge`, `rebase`, `stash`, `checkout`/`switch`, ni crea o borra
+  ramas, ni hace ningún otro comando que modifique el repositorio. Tampoco
+  introduce carpetas `.git` generadas por herramientas (ej. `create-next-app`
+  crea un repo con commit automático: usar `--disable-git` o equivalente).
+  Solo se permiten comandos de lectura (`git status`, `git diff`, `git log`).
+
 - **Antes de implementar un cambio**, revisar de forma general qué
   funcionalidades existentes se ven afectadas (agendamiento, pagos,
   formularios, panel admin) para validar que la aplicación completa siga
