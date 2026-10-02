@@ -6,3 +6,128 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+// -----------------------------------------------------------------------------
+// Auth.js (NextAuth) Models for Staff (Admins and Professionals)
+// -----------------------------------------------------------------------------
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  role          Role      @default(PROFESSIONAL)
+  
+  accounts      Account[]
+  sessions      Session[]
+  
+  // Relations for professional
+  appointments  Appointment[] @relation("ProfessionalAppointments")
+  formTokens    FormToken[]   @relation("ProfessionalTokens")
+  
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+enum Role {
+  ADMIN
+  PROFESSIONAL
+}
+
+// -----------------------------------------------------------------------------
+// Appointments
+// -----------------------------------------------------------------------------
+model Appointment {
+  id              String   @id @default(cuid())
+  professionalId  String
+  professional    User     @relation("ProfessionalAppointments", fields: [professionalId], references: [id])
+  
+  clientName      String
+  clientEmail     String
+  clientPhone     String?
+  
+  startTime       DateTime
+  endTime         DateTime
+  
+  // Payment info
+  stripeSessionId String?  @unique
+  paymentStatus   PaymentStatus @default(PENDING)
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+}
+
+// -----------------------------------------------------------------------------
+// Forms & Submissions
+// -----------------------------------------------------------------------------
+model FormToken {
+  id              String   @id @default(cuid())
+  token           String   @unique @default(uuid())
+  clientEmail     String
+  formType        String   // Ej. "GENERAL_INFO", "STUDENT_VISA"
+  
+  professionalId  String
+  professional    User     @relation("ProfessionalTokens", fields: [professionalId], references: [id])
+  
+  expiresAt       DateTime
+  isUsed          Boolean  @default(false)
+  
+  submissions     FormSubmission[]
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+model FormSubmission {
+  id              String   @id @default(cuid())
+  tokenId         String
+  token           FormToken @relation(fields: [tokenId], references: [id], onDelete: Cascade)
+  
+  personName      String   // Para distinguir familiares si un mismo token registra a varios
+  data            Json     // Las respuestas al banco de preguntas (excluyendo sensibles para admins/no asignados)
+  sensitiveData   Json?    // Las respuestas de las secciones 12-16 cifradas o almacenadas separadamente
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}

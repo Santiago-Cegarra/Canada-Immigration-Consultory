@@ -19,12 +19,20 @@
     "db:studio": "prisma studio"
   },
   "dependencies": {
+    "@auth/prisma-adapter": "^2.11.3",
+    "@hookform/resolvers": "^5.9.1",
     "@prisma/adapter-pg": "7.10.0",
     "@prisma/client": "7.10.0",
+    "@react-email/components": "^1.0.12",
     "next": "16.3.6",
+    "next-auth": "^4.24.15",
     "pg": "^8.23.0",
     "react": "19.2.8",
-    "react-dom": "19.2.8"
+    "react-dom": "19.2.8",
+    "react-hook-form": "^7.89.0",
+    "resend": "^6.31.0",
+    "stripe": "^23.0.0",
+    "zod": "^4.6.5"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
