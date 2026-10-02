@@ -1,52 +1,42 @@
-import NextAuth from "next-auth";
 import { PrismaAdapter } from "@auth/prisma-adapter";
+import bcrypt from "bcryptjs";
+import NextAuth from "next-auth";
+import Credentials from "next-auth/providers/credentials";
 import authConfig from "./auth.config";
 import { db } from "./lib/db";
-import Credentials from "next-auth/providers/credentials";
-import bcrypt from "bcryptjs";
+import { loginSchema } from "./modules/auth/login-schema";
 
+/**
+ * Auth.js para el personal (admin y profesionales). Se usa en el servidor:
+ * route handler, Server Actions y páginas. El proxy usa solo `auth.config.ts`.
+ */
 export const { handlers, auth, signIn, signOut } = NextAuth({
-  adapter: PrismaAdapter(db),
-  session: { strategy: "jwt" }, // Credentials provider necesita JWT
   ...authConfig,
+  adapter: PrismaAdapter(db),
   providers: [
     Credentials({
-      name: "Credentials",
       credentials: {
         email: { label: "Email", type: "email" },
-        password: { label: "Contraseña", type: "password" }
+        password: { label: "Contraseña", type: "password" },
       },
       async authorize(credentials) {
-        if (!credentials?.email || !credentials?.password) {
-          return null;
-        }
+        const parsed = loginSchema.safeParse(credentials);
+        if (!parsed.success) return null;
 
-        const user = await db.user.findUnique({
-          where: {
-            email: credentials.email as string
-          }
-        });
+        const { email, password } = parsed.data;
+        const user = await db.user.findUnique({ where: { email } });
+        if (!user?.password) return null;
 
-        if (!user || !user.password) {
-          return null;
-        }
+        const passwordsMatch = await bcrypt.compare(password, user.password);
+        if (!passwordsMatch) return null;
 
-        const passwordsMatch = await bcrypt.compare(
-          credentials.password as string,
-          user.password
-        );
-
-        if (passwordsMatch) {
-          return {
-            id: user.id,
-            email: user.email,
-            name: user.name,
-            role: user.role,
-          };
-        }
-
-        return null;
-      }
-    })
-  ]
+        return {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          role: user.role,
+        };
+      },
+    }),
+  ],
 });
