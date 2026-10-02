@@ -19,19 +19,19 @@ type ContactDetail = {
 };
 
 /** Número de WhatsApp solo con dígitos y código de país, como lo pide `wa.me`. */
-const whatsappNumber = "10000000000";
+const whatsappNumber = "16479042232";
 
 const details: ContactDetail[] = [
   {
     icon: "call",
     label: "Teléfono",
-    value: "+1 (000) 000-0000",
-    href: "tel:+10000000000",
+    value: "+1 (647) 904-2232",
+    href: "tel:+16479042232",
   },
   {
     icon: "chat",
     label: "WhatsApp",
-    value: "+1 (000) 000-0000",
+    value: "+16479042232",
     href: `https://wa.me/${whatsappNumber}`,
   },
   {
@@ -88,11 +88,10 @@ export const contactoContent = {
     details,
     socialTitle: "Síguenos",
     social: socialLinks,
-    map: {
-      title: "Mapa de la oficina",
-      /** Embebido público de Google Maps; no necesita clave de API. */
-      src: "https://www.google.com/maps?q=Toronto,+Ontario,+Canada&output=embed",
-    },
+map: {
+  title: "Mapa de la oficina",
+  src: "https://www.google.com/maps?q=390+Queens+Quay+W,+Toronto,+ON+M5V+0X7&output=embed",
+},
     whatsappAction: {
       label: "Escríbenos por WhatsApp",
       href: `https://wa.me/${whatsappNumber}`,

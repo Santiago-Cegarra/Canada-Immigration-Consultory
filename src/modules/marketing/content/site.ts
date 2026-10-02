@@ -69,8 +69,8 @@ export const siteContent = {
     groups: footerGroups,
     contact: {
       title: "Contacto",
-      location: "Toronto, Ontario, Canadá",
-      email: "info@helpimmigrationcanada.ca",
+      location: "390 Queens Quay W, Toronto, ON M5V 3A6",
+      email: "info@helpimmigrationcanada.net",
       social: socialLinks,
     },
     legalNotice: "Miembros autorizados por el CICC.",
