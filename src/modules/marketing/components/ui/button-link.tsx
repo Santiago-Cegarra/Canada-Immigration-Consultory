@@ -22,7 +22,7 @@ const BASE_CLASSES =
 
 const VARIANT_CLASSES: Record<ButtonVariant, string> = {
   primary:
-    "bg-primary text-on-primary shadow-sm hover:bg-primary-container hover:shadow-[0_4px_20px_rgba(188,1,0,0.3)]",
+    "bg-primary text-on-primary shadow-sm hover:bg-primary-container hover:shadow-[0_4px_20px_rgba(213,43,30,0.3)]",
   secondary:
     "border border-outline-variant text-on-surface hover:border-primary hover:text-primary",
   outline:
