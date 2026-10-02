@@ -8,4 +8,11 @@
  *
  * 🟢 You can import this file directly.
  */
+export type * from './models/User'
+export type * from './models/Account'
+export type * from './models/Session'
+export type * from './models/VerificationToken'
+export type * from './models/Appointment'
+export type * from './models/FormToken'
+export type * from './models/FormSubmission'
 export type * from './commonInputTypes'
