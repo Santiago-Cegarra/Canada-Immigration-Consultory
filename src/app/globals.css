@@ -145,6 +145,23 @@
  * `rounded-xl`, `rounded-2xl`, `rounded-3xl` y `rounded-full` ya funcionan.
  */
 
+/*
+ * Animación de entrada de las tarjetas del catálogo de programas: aparecen con un
+ * leve fundido y ascenso. `backwards` mantiene el estado inicial durante el
+ * retraso escalonado y NO deja un `transform` fijo al terminar. Se usa siempre
+ * con `motion-safe:` para respetar `prefers-reduced-motion`.
+ */
+@theme {
+  --animate-card-in: card-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+
+  @keyframes card-in {
+    from {
+      opacity: 0;
+      transform: scale(0.95) translateY(10px);
+    }
+  }
+}
+
 @layer base {
   body {
     /* Evita el efecto rebote al final del scroll. */
@@ -168,5 +185,19 @@
       "wght" 400,
       "GRAD" 0,
       "opsz" 24;
+  }
+}
+
+/*
+ * Oculta la barra de scroll de un contenedor que sigue siendo desplazable (p. ej.
+ * la fila de filtros en móvil). La regla `::-webkit-scrollbar` de `base` solo
+ * cubre Chrome y Safari; esta añade Firefox y el Edge antiguo.
+ */
+@utility no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
   }
 }

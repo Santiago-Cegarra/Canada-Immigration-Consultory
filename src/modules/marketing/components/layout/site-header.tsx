@@ -41,8 +41,7 @@ export function SiteHeader() {
         <MobileMenu items={primaryNav} action={headerAction} />
 
         {/*
-         * Acceso de personal*/
-        }
+         * Acceso de personal*/}
         <Link
           href="#"
           aria-label="Acceso del personal"

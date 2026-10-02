@@ -13,22 +13,32 @@
  */
 export type MaterialSymbol =
   | "arrow_forward"
+  | "assignment"
   | "award_star"
   | "chat"
   | "close"
+  | "dataset"
   | "description"
+  | "diversity_1"
   | "family_restroom"
   | "flight_takeoff"
   | "gavel"
   | "handshake"
+  | "home"
   | "mail"
+  | "map"
   | "menu"
   | "person"
   | "public"
   | "school"
+  | "speed"
   | "star"
+  | "strategy"
   | "support_agent"
-  | "verified";
+  | "verified"
+  | "verified_user"
+  | "visibility"
+  | "work";
 
 export type ImageAsset = {
   src: string;
@@ -87,4 +97,36 @@ export type Testimonial = {
 export type FooterLinkGroup = {
   title: string;
   items: NavItem[];
+};
+
+/**
+ * Categorías de programa. Unión cerrada, como `MaterialSymbol`: un programa solo
+ * puede apuntar a una categoría que exista. Para añadir una, se añade aquí y se
+ * define en `content/servicios.ts` (TypeScript obliga a ambas cosas).
+ */
+export type ProgramCategoryId =
+  "residencia" | "estudio" | "trabajo" | "familia";
+
+export type ProgramCategory = {
+  id: ProgramCategoryId;
+  label: string;
+  icon: MaterialSymbol;
+};
+
+/** Un programa migratorio o de estudio del catálogo de servicios. */
+export type Program = {
+  icon: MaterialSymbol;
+  category: ProgramCategory;
+  title: string;
+  description: string;
+  image: ImageAsset;
+  /** Página de detalle del programa. */
+  href: string;
+};
+
+/** Argumento de venta con icono, título y texto corto. */
+export type Feature = {
+  icon: MaterialSymbol;
+  title: string;
+  description: string;
 };
