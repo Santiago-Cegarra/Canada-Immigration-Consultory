@@ -1,26 +1,203 @@
 @import "tailwindcss";
 
+/*
+ * La fuente de iconos (Material Symbols) NO se carga aquí: un `@import` después
+ * de `@import "tailwindcss"` queda detrás de reglas CSS y el navegador lo
+ * descarta. Se carga con un `<link>` desde `layout.tsx`.
+ */
+
+/*
+ * Las dos familias reales del diseño. Los alias por rol (`--font-headline-lg`,
+ * `--font-body-md`, …) apuntan aquí para no repetir el stack ocho veces.
+ * Las variables `--font-hanken-grotesk` y `--font-inter` las inyecta
+ * `next/font` desde `layout.tsx`.
+ */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --font-display-stack:
+    var(--font-hanken-grotesk), ui-sans-serif, system-ui, sans-serif;
+  --font-body-stack: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+/*
+ * Tokens de diseño — equivalente en Tailwind 4 del `tailwind.config` que traía
+ * el HTML. Tailwind 4 se configura en CSS, no en JS: cada variable de aquí
+ * genera su utilidad (`--color-primary` → `bg-primary`, `text-primary`, …).
+ *
+ * Esta es la ÚNICA fuente de verdad visual. Ningún componente debe llevar un
+ * color o tamaño hardcodeado.
+ */
+@theme {
+  /* --- Marca -------------------------------------------------------------- */
+  --color-primary: #bc0100;
+  --color-on-primary: #ffffff;
+  --color-primary-container: #eb0000;
+  --color-on-primary-container: #fffbff;
+  --color-primary-fixed: #ffdad4;
+  --color-primary-fixed-dim: #ffb4a8;
+  --color-on-primary-fixed: #410000;
+  --color-on-primary-fixed-variant: #930100;
+  --color-inverse-primary: #ffb4a8;
+
+  /* --- Secundario y terciario (neutros de apoyo) ------------------------- */
+  --color-secondary: #5f5e5e;
+  --color-on-secondary: #ffffff;
+  --color-secondary-container: #e4e2e1;
+  --color-on-secondary-container: #656464;
+  --color-secondary-fixed: #e4e2e1;
+  --color-secondary-fixed-dim: #c8c6c6;
+  --color-on-secondary-fixed: #1b1c1c;
+  --color-on-secondary-fixed-variant: #474747;
+
+  --color-tertiary: #5b5c5c;
+  --color-on-tertiary: #ffffff;
+  --color-tertiary-container: #737575;
+  --color-on-tertiary-container: #fcfcfc;
+  --color-tertiary-fixed: #e2e2e2;
+  --color-tertiary-fixed-dim: #c6c6c7;
+  --color-on-tertiary-fixed: #1a1c1c;
+  --color-on-tertiary-fixed-variant: #454747;
+
+  /* --- Superficies ------------------------------------------------------- */
+  --color-surface: #f9f9f9;
+  --color-on-surface: #1a1c1c;
+  --color-on-surface-variant: #603e39;
+  --color-surface-variant: #e2e2e2;
+  --color-surface-bright: #f9f9f9;
+  --color-surface-dim: #dadada;
+  --color-surface-tint: #c00100;
+  --color-surface-container-lowest: #ffffff;
+  --color-surface-container-low: #f3f3f4;
+  --color-surface-container: #eeeeee;
+  --color-surface-container-high: #e8e8e8;
+  --color-surface-container-highest: #e2e2e2;
+  --color-inverse-surface: #2f3131;
+  --color-inverse-on-surface: #f0f1f1;
+  --color-background: #f9f9f9;
+  --color-on-background: #1a1c1c;
+
+  /* --- Bordes y estados ------------------------------------------------- */
+  --color-outline: #956d67;
+  --color-outline-variant: #ebbbb4;
+  --color-error: #ba1a1a;
+  --color-on-error: #ffffff;
+  --color-error-container: #ffdad6;
+  --color-on-error-container: #93000a;
+
+  /* --- Familias por rol ------------------------------------------------- */
+  --font-display-lg: var(--font-display-stack);
+  --font-headline-lg: var(--font-display-stack);
+  --font-headline-lg-mobile: var(--font-display-stack);
+  --font-headline-md: var(--font-display-stack);
+  --font-body-lg: var(--font-body-stack);
+  --font-body-md: var(--font-body-stack);
+  --font-label-md: var(--font-body-stack);
+  --font-caption: var(--font-body-stack);
+
+  /* --- Escala tipográfica ---------------------------------------------- */
+  --text-display-lg: 48px;
+  --text-display-lg--line-height: 56px;
+  --text-display-lg--letter-spacing: -0.02em;
+  --text-display-lg--font-weight: 800;
+
+  --text-headline-lg: 32px;
+  --text-headline-lg--line-height: 40px;
+  --text-headline-lg--font-weight: 700;
+
+  --text-headline-lg-mobile: 24px;
+  --text-headline-lg-mobile--line-height: 32px;
+  --text-headline-lg-mobile--font-weight: 700;
+
+  --text-headline-md: 24px;
+  --text-headline-md--line-height: 32px;
+  --text-headline-md--font-weight: 600;
+
+  --text-body-lg: 18px;
+  --text-body-lg--line-height: 28px;
+  --text-body-lg--font-weight: 400;
+
+  --text-body-md: 16px;
+  --text-body-md--line-height: 24px;
+  --text-body-md--font-weight: 400;
+
+  --text-label-md: 14px;
+  --text-label-md--line-height: 20px;
+  --text-label-md--letter-spacing: 0.05em;
+  --text-label-md--font-weight: 600;
+
+  --text-caption: 12px;
+  --text-caption--line-height: 16px;
+  --text-caption--font-weight: 400;
+
+  /* --- Espaciado y medidas --------------------------------------------- */
+  --spacing-base-unit: 8px;
+  --spacing-gutter: 24px;
+  --spacing-margin-mobile: 16px;
+  --spacing-section-padding-lg: 120px;
+
+  /* Ancho máximo del contenido: `max-w-page`. Reemplaza el `max-w-[1280px]`
+     que estaba repetido en cada sección del HTML. */
+  --container-page: 1280px;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/*
+ * Los radios del diseño (0.25 / 0.5 / 0.75rem / full) coinciden exactamente con
+ * los de Tailwind 4, así que no se redefinen. `rounded`, `rounded-lg`,
+ * `rounded-xl`, `rounded-2xl`, `rounded-3xl` y `rounded-full` ya funcionan.
+ */
+
+/*
+ * Animación de entrada de las tarjetas del catálogo de programas: aparecen con un
+ * leve fundido y ascenso. `backwards` mantiene el estado inicial durante el
+ * retraso escalonado y NO deja un `transform` fijo al terminar. Se usa siempre
+ * con `motion-safe:` para respetar `prefers-reduced-motion`.
+ */
+@theme {
+  --animate-card-in: card-in 0.4s cubic-bezier(0.16, 1, 0.3, 1) backwards;
+
+  @keyframes card-in {
+    from {
+      opacity: 0;
+      transform: scale(0.95) translateY(10px);
+    }
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer base {
+  body {
+    /* Evita el efecto rebote al final del scroll. */
+    overscroll-behavior: none;
+  }
+
+  /* Decisión de diseño del HTML original: barras de scroll ocultas.
+     Quitar esta regla si se prefiere el scrollbar nativo visible. */
+  ::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@layer utilities {
+  /* Material Symbols es una fuente variable: el relleno se controla con el eje
+     FILL, no con `fill-current`. `icon-filled` sirve, p. ej., para las estrellas
+     de una valoración. */
+  .icon-filled {
+    font-variation-settings:
+      "FILL" 1,
+      "wght" 400,
+      "GRAD" 0,
+      "opsz" 24;
+  }
+}
+
+/*
+ * Oculta la barra de scroll de un contenedor que sigue siendo desplazable (p. ej.
+ * la fila de filtros en móvil). La regla `::-webkit-scrollbar` de `base` solo
+ * cubre Chrome y Safari; esta añade Firefox y el Edge antiguo.
+ */
+@utility no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
