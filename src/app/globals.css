@@ -28,15 +28,17 @@
  */
 @theme {
   /* --- Marca -------------------------------------------------------------- */
-  --color-primary: #bc0100;
+  /* Paleta tomada del emblema: rojo de la bandera, negro, blanco y el tono
+     pergamino del fondo del escudo. `primary-container` es el hover del rojo. */
+  --color-primary: #d52b1e;
   --color-on-primary: #ffffff;
-  --color-primary-container: #eb0000;
+  --color-primary-container: #a81f16;
   --color-on-primary-container: #fffbff;
-  --color-primary-fixed: #ffdad4;
-  --color-primary-fixed-dim: #ffb4a8;
-  --color-on-primary-fixed: #410000;
-  --color-on-primary-fixed-variant: #930100;
-  --color-inverse-primary: #ffb4a8;
+  --color-primary-fixed: #fbdcd8;
+  --color-primary-fixed-dim: #f2a49c;
+  --color-on-primary-fixed: #3d0a06;
+  --color-on-primary-fixed-variant: #a81f16;
+  --color-inverse-primary: #f2a49c;
 
   /* --- Secundario y terciario (neutros de apoyo) ------------------------- */
   --color-secondary: #5f5e5e;
@@ -58,26 +60,26 @@
   --color-on-tertiary-fixed-variant: #454747;
 
   /* --- Superficies ------------------------------------------------------- */
-  --color-surface: #f9f9f9;
-  --color-on-surface: #1a1c1c;
-  --color-on-surface-variant: #603e39;
-  --color-surface-variant: #e2e2e2;
-  --color-surface-bright: #f9f9f9;
-  --color-surface-dim: #dadada;
-  --color-surface-tint: #c00100;
+  --color-surface: #f5f0e8;
+  --color-on-surface: #111111;
+  --color-on-surface-variant: #5c5c5c;
+  --color-surface-variant: #e2ddd5;
+  --color-surface-bright: #f5f0e8;
+  --color-surface-dim: #d8d2c8;
+  --color-surface-tint: #d52b1e;
   --color-surface-container-lowest: #ffffff;
-  --color-surface-container-low: #f3f3f4;
-  --color-surface-container: #eeeeee;
-  --color-surface-container-high: #e8e8e8;
-  --color-surface-container-highest: #e2e2e2;
-  --color-inverse-surface: #2f3131;
-  --color-inverse-on-surface: #f0f1f1;
-  --color-background: #f9f9f9;
-  --color-on-background: #1a1c1c;
+  --color-surface-container-low: #efe9df;
+  --color-surface-container: #e8e2d8;
+  --color-surface-container-high: #e2dcd2;
+  --color-surface-container-highest: #ddd7cd;
+  --color-inverse-surface: #111111;
+  --color-inverse-on-surface: #ffffff;
+  --color-background: #f5f0e8;
+  --color-on-background: #111111;
 
   /* --- Bordes y estados ------------------------------------------------- */
-  --color-outline: #956d67;
-  --color-outline-variant: #ebbbb4;
+  --color-outline: #8a8580;
+  --color-outline-variant: #d6d0c6;
   --color-error: #ba1a1a;
   --color-on-error: #ffffff;
   --color-error-container: #ffdad6;

@@ -14,9 +14,9 @@ import type {
  * sitio, porque header, footer y secciones leen de este archivo.
  */
 
+/** Emblema circular de la marca. El favicon es el mismo archivo (`app/icon.jpg`). */
 const logo: ImageAsset = {
-  // TODO: mover a `public/logo.svg` — esta URL es temporal.
-  src: "https://lh3.googleusercontent.com/aida-public/AB6AXuC29aj74FERUYMfymDAY1CrdP6m4-d5N47dIT4U8ykEgjfRwR3JcCI8GmTNeuB8s9mRi0M4ORqS4_GjDF-0oC2CQKCBeIEo-zoGEZ01mpLloLelQXQoPCDqQeL8PkRezSQe7zWX3NuBT8dyntMbwURJw0fl2LLY8kCZbFjtg0tv73a5lsr5sjRlbbmpX5onLpfceilO4LCITOSGx7d_evO1Z6b3Tug4QfjeQ_j7P-2jnxd_eFIgHMS0",
+  src: "/logo.jpg",
   alt: "Help Immigration Canada",
 };
 
@@ -27,7 +27,7 @@ const primaryNav: NavItem[] = [
   { label: "Sobre Nosotros", href: "#" },
 ];
 
-const headerAction: CallToAction = { label: "Contacto", href: "#" };
+const headerAction: CallToAction = { label: "Contacto", href: "/contacto" };
 
 const socialLinks: CallToAction[] = [
   { label: "Sitio web", href: "#", icon: "public" },
@@ -69,8 +69,8 @@ export const siteContent = {
     groups: footerGroups,
     contact: {
       title: "Contacto",
-      location: "Toronto, Ontario, Canadá",
-      email: "info@helpimmigrationcanada.ca",
+      location: "390 Queens Quay W, Toronto, ON M5V 3A6",
+      email: "info@helpimmigrationcanada.net",
       social: socialLinks,
     },
     legalNotice: "Miembros autorizados por el CICC.",
