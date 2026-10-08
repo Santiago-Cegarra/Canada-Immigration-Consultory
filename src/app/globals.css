@@ -168,25 +168,6 @@
     overscroll-behavior: none;
   }
 
-  /*
-   * Superficies del navegador con la paleta del sistema: selección de texto,
-   * cursor de escritura y anillo de foco. El anillo es único para todo el sitio:
-   * 2px en Rojo Hoja de Arce sobre papel, blanco dentro de `surface-dark`.
-   */
-  ::selection {
-    background-color: var(--color-primary-fixed);
-    color: var(--color-on-primary-fixed);
-  }
-
-  html {
-    caret-color: var(--color-primary);
-  }
-
-  :focus-visible {
-    outline: 2px solid var(--focus-ring, var(--color-primary));
-    outline-offset: 3px;
-  }
-
   /* Decisión de diseño del HTML original: barras de scroll ocultas.
      Quitar esta regla si se prefiere el scrollbar nativo visible. */
   ::-webkit-scrollbar {
@@ -205,14 +186,6 @@
       "GRAD" 0,
       "opsz" 24;
   }
-}
-
-/*
- * Marca una superficie oscura (hero sobre foto, losas en Tinta Grafito). Dentro,
- * el anillo de foco pasa a blanco: el rojo sobre tinta no llega a 3:1.
- */
-@utility surface-dark {
-  --focus-ring: var(--color-surface-container-lowest);
 }
 
 /*

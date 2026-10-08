@@ -17,9 +17,9 @@ export function SiteFooter() {
             <Image
               src={logo.src}
               alt={logo.alt}
-              width={160}
-              height={32}
-              className="mb-6 h-8 w-auto object-contain"
+              width={80}
+              height={80}
+              className="mb-6 h-20 w-20 rounded-full object-contain"
             />
             <p className="font-body-md text-body-md text-on-surface-variant">
               {tagline}

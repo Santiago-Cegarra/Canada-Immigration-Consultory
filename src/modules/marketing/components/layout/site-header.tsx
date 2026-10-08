@@ -21,10 +21,10 @@ export function SiteHeader() {
           <Image
             src={logo.src}
             alt={logo.alt}
-            width={160}
-            height={32}
+            width={56}
+            height={56}
             priority
-            className="h-8 w-auto object-contain"
+            className="h-14 w-14 rounded-full object-contain"
           />
           <span className="hidden font-headline-md text-headline-md tracking-tight text-on-surface sm:block">
             {name}
