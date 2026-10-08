@@ -7,7 +7,7 @@ export function StatCard({ icon, value, label, wide = false }: Stat) {
   return (
     <div
       className={cn(
-        "flex items-start gap-4 rounded-xl border border-surface-container bg-surface-container-lowest p-6 shadow-sm",
+        "flex items-start gap-4 rounded-xl border border-surface-container bg-surface-container-lowest p-6",
         wide && "sm:col-span-2",
       )}
     >

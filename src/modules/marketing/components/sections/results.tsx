@@ -32,7 +32,7 @@ export function Results() {
           <figure className="relative m-0 flex flex-col gap-8 rounded-2xl bg-surface-container-low p-8 md:p-12">
             <span
               aria-hidden
-              className="absolute -top-6 -right-6 font-serif text-[80px] leading-none text-primary/10"
+              className="absolute top-4 right-6 font-serif text-[80px] leading-none text-primary/10"
             >
               &ldquo;
             </span>

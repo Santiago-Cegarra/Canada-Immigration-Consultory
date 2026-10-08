@@ -32,7 +32,7 @@ export function ServiceCard({ icon, title, description, action }: Service) {
 
       <Link
         href={action.href}
-        className="group/link mt-auto inline-flex items-center gap-1 font-label-md text-label-md text-primary"
+        className="group/link relative mt-auto inline-flex items-center gap-1 self-start font-label-md text-label-md text-primary after:absolute after:-inset-x-2 after:-inset-y-2.5"
       >
         {action.label}
         {action.icon && (

@@ -14,7 +14,7 @@ export function PillarCard({ icon, title, description }: Feature) {
       <h3 className="mb-2 font-headline-md text-[18px] font-bold text-on-surface">
         {title}
       </h3>
-      <p className="font-body-md text-caption text-on-surface-variant">
+      <p className="font-body-md text-body-md text-on-surface-variant">
         {description}
       </p>
     </div>
