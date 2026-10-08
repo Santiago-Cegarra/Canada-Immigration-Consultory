@@ -49,11 +49,7 @@ export function Process() {
             <ol className="relative ml-4 space-y-12 border-l-2 border-surface-container">
               {steps.map((step, index) => (
                 <li key={step.title}>
-                  <ProcessStep
-                    {...step}
-                    position={index + 1}
-                    highlighted={index === 0}
-                  />
+                  <ProcessStep {...step} position={index + 1} />
                 </li>
               ))}
             </ol>

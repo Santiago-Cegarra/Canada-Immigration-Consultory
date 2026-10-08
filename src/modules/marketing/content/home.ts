@@ -1,5 +1,6 @@
 import type {
   CallToAction,
+  Feature,
   ImageAsset,
   ProcessStep,
   Service,
@@ -32,6 +33,11 @@ const processImage: ImageAsset = {
 const ctaImage: ImageAsset = {
   src: "https://lh3.googleusercontent.com/aida-public/AB6AXuBZwSYOGor5hN2JZSL3JvLb6PV9ESerm44INFHfIQAbY5DifgtatFWedDQO8ptOU7aU5nrV64OrXoH4SXBtfuUmArryqMUfLZNm7wx0sQR0iMDF8B8xNnfeH_CioJOUZ0ACivRhoi1uj4YPjY7MNuBdyttFTUafjPn4KqybCu5ingT8daNOccDorM-8-324iT9s3FxTZHRq_RsG5_j0p24mJr94YG4RkvuiecllEVWdLLfrrOe7f16Y",
   alt: "Familia al aire libre celebrando su llegada a Canadá",
+};
+
+const teamImage: ImageAsset = {
+  src: "https://lh3.googleusercontent.com/aida-public/AB6AXuCWH6hoS368cr-7az6swDiH9Lm6JjdL4-7rC2oJ_aG5-DqNye3B_94CdgdUfZwXDCsaBtwPkoT6QZgtq-ber1tz8CmuGyMz9LjJSIpJvBbazW04WnNCyFOERBcBql4_4HEAAJwXLK6jakRV-4m0YsEX-tPctggZHH3FVm5-pSQcQNK68UKE6Hqgl6N82GUIbjRS4eHmRrb0CfopIjRaIDpGBxRr9z158maNngglXHY",
+  alt: "Equipo de consultores regulados (RCIC) y abogados de inmigración en una sala de juntas con vista a Toronto",
 };
 
 const heroActions: CallToAction[] = [
@@ -112,6 +118,33 @@ const testimonial: Testimonial = {
   },
 };
 
+const pillars: Feature[] = [
+  {
+    icon: "gavel",
+    title: "Acreditación CICC / RCIC",
+    description:
+      "Representación legal oficial con números de licencia verificables. No somos intermediarios ni tramitadores informales.",
+  },
+  {
+    icon: "route",
+    title: "Estrategia Personalizada",
+    description:
+      "Cada perfil tiene una ruta idónea (Express Entry, PNP, Study Permits, LMIA). Evaluamos la viabilidad real antes de cualquier contrato.",
+  },
+  {
+    icon: "balance",
+    title: "Cero Falsas Promesas",
+    description:
+      "Honorarios claros en CAD sin costos ocultos y total apego a la ley de inmigración canadiense (IRPA).",
+  },
+  {
+    icon: "support_agent",
+    title: "Acompañamiento Integral",
+    description:
+      "Desde la evaluación de credenciales y preparación de expediente hasta tu llegada y establecimiento formal en Canadá.",
+  },
+];
+
 const finalCtaActions: CallToAction[] = [
   {
     label: "Comenzar Evaluación Gratuita",
@@ -171,6 +204,26 @@ export const homeContent = {
       "Llevamos más de una década construyendo puentes hacia Canadá. Nuestra experiencia se traduce en resultados reales para miles de personas.",
     stats,
     testimonial,
+  },
+  about: {
+    eyebrow: "Firma Regulada en Canadá",
+    /** El texto entre `{}` se resalta en color primario. */
+    title: "Tu Futuro en Canadá en Manos de {Profesionales Regulados}",
+    description:
+      "Más de una década brindando asesoría legal migratoria transparente, honesta y respaldada por consultores con licencia activa ante el CICC (College of Immigration and Citizenship Consultants).",
+    team: {
+      image: teamImage,
+      title: "Consultores Regulados RCIC & Abogados de Inmigración",
+      subtitle:
+        "Sede Central en Toronto, Ontario | Cobertura en todo Canadá y Latinoamérica",
+      /*
+       * TODO (antes de publicar): este número viene del diseño y casi seguro es
+       * inventado. Los números del CICC son públicos y verificables: mostrar uno
+       * que no sea de la firma es tergiversar su licencia. Sustituirlo por el real.
+       */
+      licenseLabel: "Licencia Oficial CICC #R528914",
+    },
+    pillars,
   },
   finalCta: {
     eyebrow: "Comienza Hoy",

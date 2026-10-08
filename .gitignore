@@ -48,3 +48,9 @@ next-env.d.ts
 
 # Private Docs
 docs/
+
+# Markdowns & impeccable
+design.md 
+product.md
+.impeccable
+design.json

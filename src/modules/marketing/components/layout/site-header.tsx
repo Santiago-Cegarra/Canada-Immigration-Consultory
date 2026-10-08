@@ -21,10 +21,10 @@ export function SiteHeader() {
           <Image
             src={logo.src}
             alt={logo.alt}
-            width={160}
-            height={32}
+            width={56}
+            height={56}
             priority
-            className="h-8 w-auto object-contain"
+            className="h-14 w-14 rounded-full object-contain"
           />
           <span className="hidden font-headline-md text-headline-md tracking-tight text-on-surface sm:block">
             {name}
@@ -43,11 +43,11 @@ export function SiteHeader() {
         {/*
          * Acceso de personal*/}
         <Link
-          href="#"
+          href="/login"
           aria-label="Acceso del personal"
-          className="ml-6 hidden h-8 w-8 items-center justify-center rounded-full bg-primary lg:flex"
+          className="ml-6 hidden h-8 w-8 items-center justify-center rounded-full bg-surface-container text-on-surface transition-colors hover:bg-primary/10 hover:text-primary lg:flex"
         >
-          <Icon name="person" className="text-[18px] text-on-primary" />
+          <Icon name="person" className="text-[18px]" />
         </Link>
       </div>
     </header>

@@ -1,24 +1,8 @@
 import Image from "next/image";
 import { homeContent } from "../../content/home";
 import { ButtonLink } from "../ui/button-link";
+import { HighlightedText } from "../ui/highlighted-text";
 import { Icon } from "../ui/icon";
-
-/**
- * Resalta en color primario los fragmentos del título envueltos en llaves:
- * `"Tu futuro en {Canadá} comienza"`. Permite editar el énfasis desde el
- * contenido sin tocar el markup.
- */
-function renderTitle(title: string) {
-  return title.split(/\{([^}]+)\}/).map((fragment, index) =>
-    index % 2 === 1 ? (
-      <span key={index} className="text-primary">
-        {fragment}
-      </span>
-    ) : (
-      fragment
-    ),
-  );
-}
 
 export function Hero() {
   const { eyebrow, title, description, image, actions, highlight } =
@@ -26,7 +10,7 @@ export function Hero() {
   const [primaryAction, secondaryAction] = actions;
 
   return (
-    <section className="relative -mt-20 flex min-h-[80vh] w-full items-center justify-center overflow-hidden pt-20">
+    <section className="relative -mt-20 flex min-h-[80vh] w-full items-center justify-center overflow-hidden pt-20 surface-dark">
       <div className="absolute inset-0 z-0">
         <Image
           src={image.src}
@@ -36,17 +20,22 @@ export function Hero() {
           sizes="100vw"
           className="object-cover object-center"
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-on-surface/90 via-on-surface/70 to-transparent" />
+        {/* En móvil el texto ocupa todo el ancho: capa uniforme. Desde md, el
+            degradado deja ver la foto a la derecha, donde no hay texto. */}
+        <div className="absolute inset-0 bg-on-surface/80 md:bg-transparent md:bg-gradient-to-r md:from-on-surface/90 md:via-on-surface/70 md:to-transparent" />
       </div>
 
       <div className="relative z-10 mx-auto grid w-full max-w-page grid-cols-1 gap-gutter px-gutter md:grid-cols-12">
         <div className="flex flex-col items-start gap-6 md:col-span-8 lg:col-span-6">
-          <span className="rounded-full border border-surface-container-lowest/20 bg-surface-container-lowest/10 px-4 py-2 font-label-md text-label-md tracking-widest text-primary uppercase backdrop-blur-sm">
+          <span className="rounded-full border border-surface-container-lowest/20 bg-surface-container-lowest/10 px-4 py-2 font-label-md text-label-md tracking-widest text-primary-fixed-dim uppercase backdrop-blur-sm">
             {eyebrow}
           </span>
 
           <h1 className="font-display-lg text-[48px] leading-tight font-extrabold tracking-tight text-surface-container-lowest md:text-[64px]">
-            {renderTitle(title)}
+            <HighlightedText
+              text={title}
+              emphasisClassName="text-primary-fixed-dim"
+            />
           </h1>
 
           <p className="max-w-xl font-body-lg text-body-lg text-surface-container-highest">

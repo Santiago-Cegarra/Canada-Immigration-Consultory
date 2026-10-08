@@ -17,9 +17,9 @@ export function SiteFooter() {
             <Image
               src={logo.src}
               alt={logo.alt}
-              width={160}
-              height={32}
-              className="mb-6 h-8 w-auto object-contain"
+              width={80}
+              height={80}
+              className="mb-6 h-20 w-20 rounded-full object-contain"
             />
             <p className="font-body-md text-body-md text-on-surface-variant">
               {tagline}
@@ -28,15 +28,15 @@ export function SiteFooter() {
 
           {groups.map((group) => (
             <div key={group.title}>
-              <h4 className="mb-6 font-label-md text-label-md tracking-wider text-on-surface uppercase">
+              <h2 className="mb-6 font-label-md text-label-md tracking-wider text-on-surface uppercase">
                 {group.title}
-              </h4>
+              </h2>
               <ul className="space-y-4">
                 {group.items.map((item) => (
                   <li key={item.label}>
                     <Link
                       href={item.href}
-                      className="font-body-md text-body-md text-on-surface-variant transition-colors hover:text-primary"
+                      className="-my-2 inline-block py-2 font-body-md text-body-md text-on-surface-variant transition-colors hover:text-primary"
                     >
                       {item.label}
                     </Link>
@@ -47,9 +47,9 @@ export function SiteFooter() {
           ))}
 
           <div>
-            <h4 className="mb-6 font-label-md text-label-md tracking-wider text-on-surface uppercase">
+            <h2 className="mb-6 font-label-md text-label-md tracking-wider text-on-surface uppercase">
               {contact.title}
-            </h4>
+            </h2>
             <p className="mb-2 font-body-md text-body-md text-on-surface-variant">
               {contact.location}
             </p>
@@ -78,7 +78,7 @@ export function SiteFooter() {
           <p className="text-center font-caption text-caption text-on-surface-variant md:text-left">
             © {currentYear} {siteContent.legalName}. {legalNotice}
           </p>
-          <div className="flex items-center gap-2 text-on-surface-variant opacity-50">
+          <div className="flex items-center gap-2 text-on-surface-variant">
             <Image
               src={flag.src}
               alt={flag.alt}
