@@ -24,7 +24,7 @@ const primaryNav: NavItem[] = [
   { label: "Inicio", href: "/" },
   { label: "Servicios", href: "/servicios" },
   { label: "Estudios", href: "#" },
-  { label: "Sobre Nosotros", href: "#" },
+  { label: "Sobre Nosotros", href: "/#sobre-nosotros" },
 ];
 
 const headerAction: CallToAction = { label: "Contacto", href: "#" };

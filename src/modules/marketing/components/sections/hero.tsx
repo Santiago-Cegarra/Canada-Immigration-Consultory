@@ -1,24 +1,8 @@
 import Image from "next/image";
 import { homeContent } from "../../content/home";
 import { ButtonLink } from "../ui/button-link";
+import { HighlightedText } from "../ui/highlighted-text";
 import { Icon } from "../ui/icon";
-
-/**
- * Resalta en color primario los fragmentos del título envueltos en llaves:
- * `"Tu futuro en {Canadá} comienza"`. Permite editar el énfasis desde el
- * contenido sin tocar el markup.
- */
-function renderTitle(title: string) {
-  return title.split(/\{([^}]+)\}/).map((fragment, index) =>
-    index % 2 === 1 ? (
-      <span key={index} className="text-primary">
-        {fragment}
-      </span>
-    ) : (
-      fragment
-    ),
-  );
-}
 
 export function Hero() {
   const { eyebrow, title, description, image, actions, highlight } =
@@ -46,7 +30,7 @@ export function Hero() {
           </span>
 
           <h1 className="font-display-lg text-[48px] leading-tight font-extrabold tracking-tight text-surface-container-lowest md:text-[64px]">
-            {renderTitle(title)}
+            <HighlightedText text={title} />
           </h1>
 
           <p className="max-w-xl font-body-lg text-body-lg text-surface-container-highest">
