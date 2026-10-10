@@ -10,7 +10,7 @@ export function Hero() {
   const [primaryAction, secondaryAction] = actions;
 
   return (
-    <section className="relative -mt-20 flex min-h-[80vh] w-full items-center justify-center overflow-hidden pt-20 surface-dark">
+    <section className="surface-dark relative -mt-20 flex min-h-[80vh] w-full items-center justify-center overflow-hidden pt-20">
       <div className="absolute inset-0 z-0">
         <Image
           src={image.src}

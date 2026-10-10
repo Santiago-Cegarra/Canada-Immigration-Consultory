@@ -23,8 +23,7 @@ const logo: ImageAsset = {
 const primaryNav: NavItem[] = [
   { label: "Inicio", href: "/" },
   { label: "Servicios", href: "/servicios" },
-  { label: "Estudios", href: "#" },
-  { label: "Sobre Nosotros", href: "/#sobre-nosotros" },
+  { label: "Acerca de Nosotros", href: "/nosotros" },
 ];
 
 const headerAction: CallToAction = { label: "Contacto", href: "/contacto" };

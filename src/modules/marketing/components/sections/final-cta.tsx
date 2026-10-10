@@ -10,7 +10,7 @@ export function FinalCta() {
   return (
     <section className="w-full border-t border-surface-container bg-surface-container-lowest py-24">
       <Container>
-        <div className="relative flex flex-col items-stretch overflow-hidden rounded-3xl bg-on-surface shadow-2xl surface-dark md:flex-row">
+        <div className="surface-dark relative flex flex-col items-stretch overflow-hidden rounded-3xl bg-on-surface shadow-2xl md:flex-row">
           <div className="relative z-10 flex w-full flex-col justify-center p-10 md:w-1/2 md:p-16">
             <span className="mb-4 block font-label-md text-label-md tracking-widest text-primary-fixed-dim uppercase">
               {eyebrow}

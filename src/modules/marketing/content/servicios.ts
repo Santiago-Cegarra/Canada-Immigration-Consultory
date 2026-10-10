@@ -114,7 +114,7 @@ const programs: Program[] = [
 
 const headerAction: CallToAction = {
   label: "Obtén una Evaluación de Perfil",
-  href: "#",
+  href: "/agendar",
   icon: "arrow_forward",
 };
 
@@ -141,7 +141,7 @@ const reasons: Feature[] = [
 
 const ctaAction: CallToAction = {
   label: "Comenzar Evaluación Inicial Gratuita",
-  href: "#",
+  href: "/agendar",
   icon: "assignment",
 };
 

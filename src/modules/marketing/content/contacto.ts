@@ -88,10 +88,10 @@ export const contactoContent = {
     details,
     socialTitle: "Síguenos",
     social: socialLinks,
-map: {
-  title: "Mapa de la oficina",
-  src: "https://www.google.com/maps?q=390+Queens+Quay+W,+Toronto,+ON+M5V+0X7&output=embed",
-},
+    map: {
+      title: "Mapa de la oficina",
+      src: "https://www.google.com/maps?q=390+Queens+Quay+W,+Toronto,+ON+M5V+0X7&output=embed",
+    },
     whatsappAction: {
       label: "Escríbenos por WhatsApp",
       href: `https://wa.me/${whatsappNumber}`,
