@@ -12,38 +12,58 @@
  * literal a la vista del usuario. Para usar un icono nuevo, añádelo aquí.
  */
 export type MaterialSymbol =
+  | "account_balance"
+  | "apartment"
   | "arrow_forward"
   | "assignment"
   | "award_star"
+  | "badge"
   | "balance"
+  | "calendar_month"
   | "call"
   | "chat"
+  | "check"
+  | "check_circle"
+  | "chevron_left"
+  | "chevron_right"
   | "close"
+  | "credit_card"
   | "dataset"
   | "description"
   | "diversity_1"
+  | "error"
+  | "event_available"
+  | "event_busy"
   | "family_restroom"
   | "flight_takeoff"
   | "gavel"
+  | "groups"
   | "handshake"
+  | "help"
   | "home"
+  | "hourglass_top"
+  | "link"
   | "location_on"
   | "lock"
   | "mail"
   | "map"
   | "menu"
+  | "open_in_new"
+  | "payments"
   | "person"
   | "public"
   | "route"
   | "schedule"
   | "school"
   | "send"
+  | "shield"
   | "speed"
   | "star"
   | "strategy"
   | "support_agent"
   | "verified"
   | "verified_user"
+  | "videocam"
   | "visibility"
   | "work";
 
@@ -136,4 +156,6 @@ export type Feature = {
   icon: MaterialSymbol;
   title: string;
   description: string;
+  /** Etiqueta breve al pie de la tarjeta (p. ej. "Tarifas en CAD"). */
+  tag?: string;
 };

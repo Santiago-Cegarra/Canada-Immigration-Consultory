@@ -41,7 +41,7 @@ const teamImage: ImageAsset = {
 };
 
 const heroActions: CallToAction[] = [
-  { label: "Iniciar Evaluación", href: "#", icon: "arrow_forward" },
+  { label: "Iniciar Evaluación", href: "/agendar", icon: "arrow_forward" },
   { label: "Nuestros Programas", href: "#" },
 ];
 
@@ -71,7 +71,7 @@ const services: Service[] = [
     title: "Asesoría Migratoria",
     description:
       "Consultas legales personalizadas, representación ante el IRCC y estrategias para patrocinios familiares.",
-    action: { label: "Agendar cita", href: "#", icon: "arrow_forward" },
+    action: { label: "Agendar cita", href: "/agendar", icon: "arrow_forward" },
   },
 ];
 
@@ -148,12 +148,12 @@ const pillars: Feature[] = [
 const finalCtaActions: CallToAction[] = [
   {
     label: "Comenzar Evaluación Gratuita",
-    href: "#",
+    href: "/agendar",
     icon: "arrow_forward",
   },
   {
     label: "Hablar con un Consultor",
-    href: "#",
+    href: "/contacto",
     icon: "chat",
     iconPosition: "start",
   },

@@ -5,68 +5,12 @@ import {
   type ContactFormState,
   sendContactMessage,
 } from "@/modules/contacto/actions";
-import { type ContactField, TRAMITES } from "@/modules/contacto/validation";
+import { TRAMITES } from "@/modules/contacto/validation";
 import { contactoContent } from "../../content/contacto";
+import { FormField } from "../ui/form-field";
 import { Icon } from "../ui/icon";
 
 const INITIAL_STATE: ContactFormState = { status: "idle" };
-
-const INPUT_CLASSES =
-  "w-full rounded-lg border border-outline-variant bg-surface-container-lowest px-4 py-3 font-body-md text-body-md text-on-surface transition-colors placeholder:text-on-surface-variant/60 focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none aria-invalid:border-error";
-
-type FieldProps = {
-  name: ContactField;
-  label: string;
-  error?: string;
-  className?: string;
-  children: (props: {
-    id: string;
-    name: ContactField;
-    "aria-invalid": boolean;
-    "aria-describedby"?: string;
-    className: string;
-    defaultValue?: string;
-  }) => React.ReactNode;
-  /** Valor con el que se rellena el campo tras un error de validación. */
-  defaultValue?: string;
-};
-
-/** Etiqueta + control + mensaje de error, conectados por `id` para accesibilidad. */
-function Field({
-  name,
-  label,
-  error,
-  className,
-  defaultValue,
-  children,
-}: FieldProps) {
-  const id = `contacto-${name}`;
-  const errorId = `${id}-error`;
-
-  return (
-    <div className={className}>
-      <label
-        htmlFor={id}
-        className="mb-2 block font-label-md text-label-md text-on-surface"
-      >
-        {label}
-      </label>
-      {children({
-        id,
-        name,
-        "aria-invalid": Boolean(error),
-        "aria-describedby": error ? errorId : undefined,
-        className: INPUT_CLASSES,
-        defaultValue,
-      })}
-      {error && (
-        <p id={errorId} className="mt-1 font-caption text-caption text-error">
-          {error}
-        </p>
-      )}
-    </div>
-  );
-}
 
 /**
  * Formulario de contacto. Es Client Component por `useActionState`, que muestra
@@ -114,7 +58,8 @@ export function ContactForm() {
         action={formAction}
         className="grid grid-cols-1 gap-6 sm:grid-cols-2"
       >
-        <Field
+        <FormField
+          idPrefix="contacto"
           name="nombre"
           defaultValue={values.nombre}
           label="Nombre completo"
@@ -124,9 +69,10 @@ export function ContactForm() {
           {(props) => (
             <input {...props} type="text" autoComplete="name" required />
           )}
-        </Field>
+        </FormField>
 
-        <Field
+        <FormField
+          idPrefix="contacto"
           name="email"
           defaultValue={values.email}
           label="Correo electrónico"
@@ -135,9 +81,10 @@ export function ContactForm() {
           {(props) => (
             <input {...props} type="email" autoComplete="email" required />
           )}
-        </Field>
+        </FormField>
 
-        <Field
+        <FormField
+          idPrefix="contacto"
           name="telefono"
           defaultValue={values.telefono}
           label="Teléfono / WhatsApp"
@@ -152,9 +99,10 @@ export function ContactForm() {
               required
             />
           )}
-        </Field>
+        </FormField>
 
-        <Field
+        <FormField
+          idPrefix="contacto"
           name="pais"
           defaultValue={values.pais}
           label="País de residencia"
@@ -168,9 +116,10 @@ export function ContactForm() {
               required
             />
           )}
-        </Field>
+        </FormField>
 
-        <Field
+        <FormField
+          idPrefix="contacto"
           name="tramite"
           defaultValue={values.tramite}
           label="Tipo de trámite"
@@ -179,9 +128,11 @@ export function ContactForm() {
           {(props) => (
             // `key`: el reset de React no restaura `defaultValue` en un
             // `<select>`, así que se vuelve a montar con el valor devuelto.
+            // `key` va ANTES del spread: detrás de `{...props}` el compilador
+            // usa `createElement` y React avisa de una lista sin `key`.
             <select
-              {...props}
               key={props.defaultValue}
+              {...props}
               defaultValue={props.defaultValue ?? ""}
               required
             >
@@ -195,9 +146,10 @@ export function ContactForm() {
               ))}
             </select>
           )}
-        </Field>
+        </FormField>
 
-        <Field
+        <FormField
+          idPrefix="contacto"
           name="mensaje"
           defaultValue={values.mensaje}
           label="Mensaje"
@@ -205,7 +157,7 @@ export function ContactForm() {
           className="sm:col-span-2"
         >
           {(props) => <textarea {...props} rows={5} required />}
-        </Field>
+        </FormField>
 
         <div className="flex flex-col gap-3 sm:col-span-2">
           <button

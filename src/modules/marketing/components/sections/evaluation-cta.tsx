@@ -19,7 +19,7 @@ export function EvaluationCta({
   backgroundImage,
 }: EvaluationCtaProps) {
   return (
-    <section className="relative mt-12 w-full overflow-hidden bg-inverse-surface py-16 surface-dark lg:py-24">
+    <section className="surface-dark relative mt-12 w-full overflow-hidden bg-inverse-surface py-16 lg:py-24">
       <Image
         src={backgroundImage.src}
         alt={backgroundImage.alt}
