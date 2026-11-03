@@ -1,0 +1,33 @@
+# Dependencies
+node_modules
+.pnp
+.pnp.*
+
+# Build outputs
+.next
+out
+build
+coverage
+src/generated/prisma
+
+# Environment & secrets
+.env*
+!.env.example
+
+# Git & IDE
+.git
+.gitignore
+.vercel
+.claude
+.impeccable
+
+# Logs & caches
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+*.tsbuildinfo
+
+# Docs & markdowns not needed for build
+docs
+*.md

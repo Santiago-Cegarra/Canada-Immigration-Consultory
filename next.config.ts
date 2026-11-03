@@ -1,6 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  output: "standalone",
   images: {
     // Las imágenes del diseño están alojadas temporalmente en Google.
     // TODO: descargarlas a `public/` y borrar este patrón — estas URLs caducan.
