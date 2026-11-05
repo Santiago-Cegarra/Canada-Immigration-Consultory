@@ -100,24 +100,51 @@ enum PaymentStatus {
 }
 
 // -----------------------------------------------------------------------------
+// Reusable Form Templates
+// -----------------------------------------------------------------------------
+model FormTemplate {
+  id          String             @id @default(cuid())
+  name        String
+  slug        String             @unique
+  description String?
+  sectionKeys String[]           @default([])
+  status      FormTemplateStatus @default(DRAFT)
+
+  accessTokens FormToken[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum FormTemplateStatus {
+  DRAFT
+  PUBLISHED
+}
+
+// -----------------------------------------------------------------------------
 // Forms & Submissions
 // -----------------------------------------------------------------------------
 model FormToken {
   id              String   @id @default(cuid())
-  token           String   @unique @default(uuid())
-  clientEmail     String
-  formType        String   // Ej. "GENERAL_INFO", "STUDENT_VISA"
+  token           String   @unique // SHA-256 de la clave; nunca se guarda la clave legible
+  tokenEncrypted  String?  // Copia cifrada para que el admin pueda recuperarla
+  tokenHint       String?  // Últimos caracteres para identificarla en el panel
+  formTemplateId  String?
+  formTemplate    FormTemplate? @relation(fields: [formTemplateId], references: [id], onDelete: Restrict)
   
   professionalId  String
   professional    User     @relation("ProfessionalTokens", fields: [professionalId], references: [id])
   
   expiresAt       DateTime
-  isUsed          Boolean  @default(false)
+  revokedAt       DateTime?
+  lastUsedAt      DateTime?
   
   submissions     FormSubmission[]
   
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
+
+  @@index([formTemplateId])
 }
 
 model FormSubmission {

@@ -33,6 +33,11 @@ No hay roles adicionales por ahora (no hay "cuenta de cliente").
    necesita un **token/clave** (entregado por el personal) para acceder a un
    formulario específico. Ver "Formularios y modelo de datos".
 5. **Panel de administrador**
+   - Construye tipos de formulario combinando y ordenando secciones reutilizables.
+   - Genera, consulta y revoca claves compartidas ligadas a un formulario y un
+     responsable. Cualquier visitante que conozca la misma clave puede enviar
+     respuestas. Se valida con hash y se conserva una copia cifrada para que el
+     admin pueda volver a verla.
    - Genera/gestiona los tokens de acceso a formularios.
    - Consulta los datos enviados en los formularios.
 
@@ -47,12 +52,15 @@ y varios formularios repiten las mismas preguntas.
   educación, empleos, etc.) se define una sola vez con su esquema de validación
   y se compone en los distintos tipos de formulario. Nunca duplicar la definición
   de una pregunta entre formularios.
-- **Sin form builder dinámico**: los tipos de formulario se definen en código
-  componiendo secciones. No construir un editor de formularios en BD salvo que
-  se pida explícitamente.
-- **Token**: uno por **tipo de formulario + cliente**. Con el mismo token, el
-  cliente puede registrar a **varios familiares**, pero solo para ese tipo de
-  formulario. Cada persona registrada tiene sus propias respuestas.
+- **Constructor por secciones**: el admin compone y ordena formularios con
+  drag-and-drop. El banco de preguntas y sus reglas sigue definido en código;
+  el constructor solo guarda referencias ordenadas a secciones, nunca copias ni
+  versiones editables de las preguntas.
+- **Token**: es una clave compartida de 8 caracteres vinculada a un tipo de
+  formulario. Cualquier persona que la conozca puede registrar respuestas para
+  sí misma o varios familiares. Cada persona registrada tiene sus propias
+  respuestas. La clave se solicita antes de enviar las preguntas al navegador,
+  vence entre 1 y 120 días y puede consultarse o revocarse desde el panel.
 - **Agente asignado**: cada token/caso tiene un profesional asignado.
 
 ### Reglas de datos (derivadas del banco de preguntas)
