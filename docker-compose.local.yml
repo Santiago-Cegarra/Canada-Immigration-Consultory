@@ -34,6 +34,7 @@ services:
         condition: service_healthy
     ports:
       - "${PORT:-3000}:3000"
+    command: sh -c "pnpm prisma generate && pnpm dev"
     env_file:
       - path: .env
         required: false
