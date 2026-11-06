@@ -67,6 +67,30 @@ export default async function AdminDashboardPage() {
             </span>
           </span>
         </Link>
+        <Link
+          href="/admin/entregas"
+          className="group rounded-2xl border border-outline-variant/70 bg-surface-container-lowest p-6 shadow-sm transition hover:-translate-y-0.5 hover:border-primary/50 hover:shadow-md"
+        >
+          <span
+            className="material-symbols-outlined text-4xl text-primary"
+            aria-hidden="true"
+          >
+            assignment_turned_in
+          </span>
+          <h2 className="mt-4 font-headline-md text-xl">Entregas recibidas</h2>
+          <p className="mt-2 text-sm text-on-surface-variant">
+            Revisa cada formulario enviado, sus respuestas y su estado.
+          </p>
+          <span className="mt-5 inline-flex items-center gap-2 font-label-md text-primary">
+            Ver entregas
+            <span
+              className="material-symbols-outlined transition group-hover:translate-x-1"
+              aria-hidden="true"
+            >
+              arrow_forward
+            </span>
+          </span>
+        </Link>
       </div>
     </div>
   );

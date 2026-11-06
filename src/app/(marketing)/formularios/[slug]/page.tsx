@@ -1,10 +1,14 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { cookies } from "next/headers";
+import { notFound, redirect } from "next/navigation";
 import { PublicForm } from "@/modules/formularios/components/public-form";
 import { AccessKeyForm } from "@/modules/formularios/components/access-key-form";
-import { resolveFormSections } from "@/modules/formularios/composition";
+import { ensureFormTemplateVersion } from "@/modules/formularios/versions";
 import { findFormTemplateBySlug } from "@/modules/formularios/templates";
-import { readFormAccess } from "@/modules/formularios/access";
+import {
+  completedFormCookieName,
+  readFormAccess,
+} from "@/modules/formularios/access";
 
 type FormPageProps = {
   params: Promise<{ slug: string }>;
@@ -25,6 +29,10 @@ export default async function GeneratedFormPage({ params }: FormPageProps) {
   const template = await findFormTemplateBySlug(slug);
   if (!template?.id) notFound();
 
+  if ((await cookies()).has(completedFormCookieName(template.id))) {
+    redirect(`/formularios/${slug}/gracias`);
+  }
+
   const access = await readFormAccess(template.id, slug);
   if (!access) {
     return (
@@ -36,9 +44,8 @@ export default async function GeneratedFormPage({ params }: FormPageProps) {
     );
   }
 
-  const sections = resolveFormSections(template.sectionKeys);
-
-  if (!sections.length) notFound();
+  const version = await ensureFormTemplateVersion(template.id);
+  if (!version?.sections.length) notFound();
 
   return (
     <div className="bg-surface-container-low py-10 md:py-16">
@@ -66,7 +73,8 @@ export default async function GeneratedFormPage({ params }: FormPageProps) {
         </div>
 
         <PublicForm
-          sections={sections}
+          sections={version.sections}
+          formVersionId={version.id}
           isDraft={template.status === "DRAFT"}
           slug={slug}
         />

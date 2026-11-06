@@ -109,11 +109,33 @@ model FormTemplate {
   description String?
   sectionKeys String[]           @default([])
   status      FormTemplateStatus @default(DRAFT)
+  currentVersion Int             @default(0)
 
   accessTokens FormToken[]
+  versions FormTemplateVersion[]
+  submissions FormSubmission[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+// Snapshot inmutable del cuestionario tal como se mostró al visitante.
+// Los IDs de las respuestas en JSONB se interpretan con estas definiciones.
+model FormTemplateVersion {
+  id             String       @id @default(cuid())
+  formTemplateId String
+  formTemplate   FormTemplate @relation(fields: [formTemplateId], references: [id], onDelete: Restrict)
+  version        Int
+  schemaHash     String
+  name           String
+  slug           String
+  compositionKeys String[]
+  sections       Json         @db.JsonB
+  submissions    FormSubmission[]
+  createdAt      DateTime     @default(now())
+
+  @@unique([formTemplateId, version])
+  @@index([formTemplateId, createdAt])
 }
 
 enum FormTemplateStatus {
@@ -148,14 +170,30 @@ model FormToken {
 }
 
 model FormSubmission {
-  id              String   @id @default(cuid())
-  tokenId         String
-  token           FormToken @relation(fields: [tokenId], references: [id], onDelete: Cascade)
-  
-  personName      String   // Para distinguir familiares si un mismo token registra a varios
-  data            Json     // Las respuestas al banco de preguntas (excluyendo sensibles para admins/no asignados)
-  sensitiveData   Json?    // Las respuestas de las secciones 12-16 cifradas o almacenadas separadamente
-  
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+  id                    String              @id @default(cuid())
+  tokenId               String
+  token                 FormToken           @relation(fields: [tokenId], references: [id], onDelete: Restrict)
+  formTemplateId        String?             // Nulo solo para envíos anteriores sin plantilla vinculada
+  formTemplate          FormTemplate?       @relation(fields: [formTemplateId], references: [id], onDelete: Restrict)
+  formTemplateVersionId String?             // Nulo solo para envíos anteriores sin snapshot histórico
+  formTemplateVersion   FormTemplateVersion? @relation(fields: [formTemplateVersionId], references: [id], onDelete: Restrict)
+  personName            String
+  personEmail           String?
+  status                FormSubmissionStatus @default(SUBMITTED)
+  responses             Json                @db.JsonB // Bloques y preguntas por ID canónico
+  sensitiveResponses    Json?               @db.JsonB // Salud/antecedentes, acceso limitado al administrador
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([formTemplateId, createdAt])
+  @@index([formTemplateVersionId])
+  @@index([tokenId, createdAt])
+  @@index([status, createdAt])
+}
+
+enum FormSubmissionStatus {
+  SUBMITTED
+  IN_REVIEW
+  COMPLETED
 }

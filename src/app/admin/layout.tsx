@@ -52,6 +52,12 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
             >
               <AdminIcon>key</AdminIcon> Accesos
             </Link>
+            <Link
+              href="/admin/entregas"
+              className="inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm transition hover:bg-surface-container"
+            >
+              <AdminIcon>assignment_turned_in</AdminIcon> Entregas
+            </Link>
           </nav>
 
           <div className="hidden text-right text-sm md:block">

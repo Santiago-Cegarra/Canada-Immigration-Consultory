@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { saveFormSubmission } from "../submission-actions";
 import {
   countSectionQuestions,
@@ -164,10 +165,12 @@ export function PublicForm({
   sections,
   isDraft,
   slug,
+  formVersionId,
 }: {
   sections: readonly SectionDefinition[];
   isDraft: boolean;
   slug: string;
+  formVersionId: string;
 }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState<AnswerMap>({});
@@ -176,6 +179,7 @@ export function PublicForm({
     { type: "success" | "error"; message: string } | undefined
   >();
   const [isSaving, startSaving] = useTransition();
+  const router = useRouter();
 
   const visibleSections = useMemo(() => {
     const age = ageFromBirthDate(answers["personal-data.birthDate"]);
@@ -223,16 +227,20 @@ export function PublicForm({
           nextStep();
         } else {
           startSaving(async () => {
-            const result = await saveFormSubmission(slug, answers);
-            setSubmissionState(
-              result.ok
-                ? {
-                    type: "success",
-                    message:
-                      "Tus respuestas fueron guardadas correctamente. El equipo ya puede ver este envío.",
-                  }
-                : { type: "error", message: result.message },
+            const result = await saveFormSubmission(
+              slug,
+              formVersionId,
+              answers,
             );
+            if (result.ok) {
+              setSubmissionState({
+                type: "success",
+                message: "Tus respuestas fueron guardadas correctamente.",
+              });
+              router.replace(`/formularios/${slug}/gracias`);
+              return;
+            }
+            setSubmissionState({ type: "error", message: result.message });
           });
         }
       }}

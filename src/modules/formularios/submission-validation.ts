@@ -13,6 +13,7 @@ export type SanitizedSubmission =
       data: JsonObject;
       sensitiveData: JsonObject;
       personName: string | null;
+      personEmail: string | null;
     }
   | { ok: false; message: string };
 
@@ -204,5 +205,13 @@ export function sanitizeSubmission(
           .join(" ") || null
       : null;
 
-  return { ok: true, data, sensitiveData, personName };
+  const contact = data["address-contact"];
+  const personEmail =
+    contact && typeof contact === "object" && !Array.isArray(contact)
+      ? typeof (contact as JsonObject).email === "string"
+        ? ((contact as JsonObject).email as string).toLowerCase()
+        : null
+      : null;
+
+  return { ok: true, data, sensitiveData, personName, personEmail };
 }

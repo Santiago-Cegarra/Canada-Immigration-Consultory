@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { FORM_SECTION_BY_KEY } from "./sections";
+import { resolveFormSections } from "./composition";
 import { sanitizeSubmission } from "./submission-validation";
 
 const personal = FORM_SECTION_BY_KEY.get("personal-data")!;
@@ -40,6 +41,25 @@ describe("validación de respuestas reutilizables", () => {
     expect(result.data).toEqual({});
     expect(result.sensitiveData).toEqual({
       "criminal-history": { hasCriminalHistory: "no" },
+    });
+  });
+
+  it("extrae el correo consultable y conserva las respuestas por bloque", () => {
+    const sections = resolveFormSections([
+      "q:personal-data:givenNames",
+      "q:personal-data:surnames",
+      "q:address-contact:email",
+    ]);
+    const result = sanitizeSubmission(sections, {
+      "personal-data.givenNames": "Ana",
+      "personal-data.surnames": "Pérez",
+      "address-contact.email": "Ana@Example.com",
+    });
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    expect(result.personEmail).toBe("ana@example.com");
+    expect(result.data["address-contact"]).toEqual({
+      email: "Ana@Example.com",
     });
   });
 

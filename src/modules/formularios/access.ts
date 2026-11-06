@@ -16,6 +16,10 @@ export function accessCookieName(templateId: string): string {
   return `hic_form_${templateId}`;
 }
 
+export function completedFormCookieName(templateId: string): string {
+  return `hic_form_completed_${templateId}`;
+}
+
 export async function findValidAccessKey(slug: string, accessKey: string) {
   const tokenHash = hashAccessKey(accessKey);
 
