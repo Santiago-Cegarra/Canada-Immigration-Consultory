@@ -5,15 +5,25 @@ import { useMemo, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { saveFormTemplate } from "../actions";
 import {
+  addCompositionPart,
+  groupPartKey,
+  includesPart,
+  parseCompositionPart,
+  questionPartKey,
+  removeGroupField,
+  removeQuestionFromSection,
+  resolveFormSections,
+  sectionPartKey,
+} from "../composition";
+import {
   countSectionQuestions,
   FORM_SECTION_BY_KEY,
   FORM_SECTIONS,
-  type SectionKey,
 } from "../sections";
 import type { FormTemplateEditorValue } from "../types";
 
-type DraggedSection = {
-  key: SectionKey;
+type DraggedPart = {
+  key: string;
   source: "library" | "canvas";
 };
 
@@ -54,7 +64,7 @@ export function FormBuilder({
     Boolean(initialTemplate.id),
   );
   const [search, setSearch] = useState("");
-  const [dragged, setDragged] = useState<DraggedSection | null>(null);
+  const [dragged, setDragged] = useState<DraggedPart | null>(null);
   const [message, setMessage] = useState<
     { type: "success" | "error"; text: string } | undefined
   >();
@@ -63,8 +73,37 @@ export function FormBuilder({
   const selected = useMemo(
     () =>
       template.sectionKeys
-        .map((key) => FORM_SECTION_BY_KEY.get(key))
-        .filter((section) => section !== undefined),
+        .map((key) => {
+          const part = parseCompositionPart(key);
+          const section = part && FORM_SECTION_BY_KEY.get(part.sectionKey);
+          const item =
+            part?.kind !== "section"
+              ? section?.items.find(({ id }) => id === part?.itemId)
+              : undefined;
+          return part && section
+            ? {
+                key,
+                part,
+                section,
+                item,
+                title:
+                  part.kind === "section"
+                    ? section.title
+                    : item?.kind === "repeatable"
+                      ? item.title
+                      : (item?.label ?? section.title),
+                questionCount:
+                  part.kind === "section"
+                    ? countSectionQuestions(section)
+                    : item?.kind === "repeatable"
+                      ? part.kind === "group" && part.fieldIds
+                        ? part.fieldIds.length
+                        : item.fields.length
+                      : 1,
+              }
+            : null;
+        })
+        .filter((entry) => entry !== null),
     [template.sectionKeys],
   );
 
@@ -72,14 +111,23 @@ export function FormBuilder({
     const normalizedSearch = search.trim().toLocaleLowerCase("es");
     return FORM_SECTIONS.filter(
       (section) =>
-        !template.sectionKeys.includes(section.key) &&
-        (!normalizedSearch ||
-          section.title.toLocaleLowerCase("es").includes(normalizedSearch) ||
-          String(section.number).includes(normalizedSearch)),
+        !normalizedSearch ||
+        section.title.toLocaleLowerCase("es").includes(normalizedSearch) ||
+        String(section.number).includes(normalizedSearch) ||
+        section.items.some(
+          (item) =>
+            (item.kind === "question" ? item.label : item.title)
+              .toLocaleLowerCase("es")
+              .includes(normalizedSearch) ||
+            (item.kind === "repeatable" &&
+              item.fields.some((field) =>
+                field.label.toLocaleLowerCase("es").includes(normalizedSearch),
+              )),
+        ),
     );
-  }, [search, template.sectionKeys]);
+  }, [search]);
 
-  const totalQuestions = selected.reduce(
+  const totalQuestions = resolveFormSections(template.sectionKeys).reduce(
     (total, section) => total + countSectionQuestions(section),
     0,
   );
@@ -92,24 +140,22 @@ export function FormBuilder({
     setMessage(undefined);
   }
 
-  function addSection(key: SectionKey, index = template.sectionKeys.length) {
-    setTemplate((current) => {
-      if (current.sectionKeys.includes(key)) return current;
-      const next = [...current.sectionKeys];
-      next.splice(index, 0, key);
-      return { ...current, sectionKeys: next };
-    });
+  function addPart(key: string, index = template.sectionKeys.length) {
+    setTemplate((current) => ({
+      ...current,
+      sectionKeys: addCompositionPart(current.sectionKeys, key, index),
+    }));
     setMessage(undefined);
   }
 
-  function removeSection(key: SectionKey) {
+  function removePart(key: string) {
     update(
       "sectionKeys",
-      template.sectionKeys.filter((sectionKey) => sectionKey !== key),
+      template.sectionKeys.filter((selectedKey) => selectedKey !== key),
     );
   }
 
-  function moveSection(key: SectionKey, direction: -1 | 1) {
+  function movePart(key: string, direction: -1 | 1) {
     const from = template.sectionKeys.indexOf(key);
     const to = from + direction;
     if (from < 0 || to < 0 || to >= template.sectionKeys.length) return;
@@ -121,9 +167,10 @@ export function FormBuilder({
 
   function beginDrag(
     event: DragEvent<HTMLElement>,
-    key: SectionKey,
-    source: DraggedSection["source"],
+    key: string,
+    source: DraggedPart["source"],
   ) {
+    event.stopPropagation();
     event.dataTransfer.effectAllowed = source === "library" ? "copy" : "move";
     event.dataTransfer.setData("text/plain", key);
     setDragged({ key, source });
@@ -135,7 +182,7 @@ export function FormBuilder({
     if (!dragged) return;
 
     if (dragged.source === "library") {
-      addSection(dragged.key, requestedIndex);
+      addPart(dragged.key, requestedIndex);
     } else {
       setTemplate((current) => {
         const from = current.sectionKeys.indexOf(dragged.key);
@@ -244,18 +291,19 @@ export function FormBuilder({
       <div className="grid items-start gap-6 xl:grid-cols-[340px_minmax(0,1fr)]">
         <aside className="rounded-2xl border border-outline-variant/70 bg-surface-container-lowest shadow-sm xl:sticky xl:top-6">
           <div className="border-b border-outline-variant/60 p-5">
-            <p className="font-headline-md text-lg">Banco de secciones</p>
+            <p className="font-headline-md text-lg">Banco de preguntas</p>
             <p className="mt-1 text-sm text-on-surface-variant">
-              Arrastra un bloque o agrégalo con el botón.
+              Despliega un bloque para ver y agregar sus preguntas. También
+              puedes arrastrarlas.
             </p>
             <label className="mt-4 flex items-center gap-2 rounded-xl border border-outline-variant bg-surface px-3 py-2.5 focus-within:border-primary">
               <Icon>search</Icon>
-              <span className="sr-only">Buscar secciones</span>
+              <span className="sr-only">Buscar bloques o preguntas</span>
               <input
                 type="search"
                 value={search}
                 onChange={(event) => setSearch(event.target.value)}
-                placeholder="Buscar sección"
+                placeholder="Buscar bloque o pregunta"
                 className="min-w-0 flex-1 bg-transparent outline-none"
               />
             </label>
@@ -265,14 +313,16 @@ export function FormBuilder({
             {available.map((section) => (
               <article
                 key={section.key}
-                draggable
-                onDragStart={(event) =>
-                  beginDrag(event, section.key, "library")
-                }
-                onDragEnd={() => setDragged(null)}
-                className="group cursor-grab rounded-xl border border-outline-variant/70 bg-surface p-4 transition hover:border-primary/50 hover:shadow-sm active:cursor-grabbing"
+                className="rounded-xl border border-outline-variant/70 bg-surface p-4 transition hover:border-primary/50 hover:shadow-sm"
               >
-                <div className="flex items-start gap-3">
+                <div
+                  draggable={!template.sectionKeys.includes(section.key)}
+                  onDragStart={(event) =>
+                    beginDrag(event, sectionPartKey(section.key), "library")
+                  }
+                  onDragEnd={() => setDragged(null)}
+                  className="flex cursor-grab items-start gap-3 active:cursor-grabbing"
+                >
                   <span className="grid size-8 shrink-0 place-items-center rounded-lg bg-primary-fixed font-label-md text-on-primary-fixed-variant">
                     {section.number}
                   </span>
@@ -286,21 +336,124 @@ export function FormBuilder({
                   </div>
                   <button
                     type="button"
-                    onClick={() => addSection(section.key)}
+                    onClick={() => addPart(sectionPartKey(section.key))}
+                    disabled={template.sectionKeys.includes(section.key)}
                     className="grid size-8 shrink-0 place-items-center rounded-full text-primary transition hover:bg-primary-fixed focus-visible:outline-2 focus-visible:outline-primary"
-                    aria-label={`Agregar ${section.title}`}
+                    aria-label={`Agregar bloque completo: ${section.title}`}
                   >
                     <Icon>add</Icon>
                   </button>
                 </div>
+                <details className="mt-3 border-t border-outline-variant/60 pt-2">
+                  <summary className="cursor-pointer text-sm font-semibold text-primary select-none">
+                    Ver {countSectionQuestions(section)} preguntas
+                  </summary>
+                  <div className="mt-3 space-y-2">
+                    {section.items.map((item) => {
+                      const itemKey =
+                        item.kind === "question"
+                          ? questionPartKey(section.key, item.id)
+                          : groupPartKey(section.key, item.id);
+                      const itemPart = parseCompositionPart(itemKey)!;
+                      const isSelected = includesPart(
+                        template.sectionKeys,
+                        itemPart,
+                      );
+                      return (
+                        <div
+                          key={item.id}
+                          className="rounded-lg bg-surface-container-low p-2"
+                        >
+                          <div
+                            draggable={!isSelected}
+                            onDragStart={(event) =>
+                              beginDrag(event, itemKey, "library")
+                            }
+                            onDragEnd={() => setDragged(null)}
+                            className="flex cursor-grab items-start gap-2 active:cursor-grabbing"
+                          >
+                            <span
+                              className="mt-0.5 text-on-surface-variant"
+                              aria-hidden="true"
+                            >
+                              <Icon>drag_indicator</Icon>
+                            </span>
+                            <span className="min-w-0 flex-1 text-sm leading-5">
+                              {item.kind === "question"
+                                ? item.label
+                                : item.title}
+                              {item.kind === "repeatable" && (
+                                <span className="block text-xs text-on-surface-variant">
+                                  Grupo repetible · {item.fields.length}{" "}
+                                  preguntas
+                                </span>
+                              )}
+                            </span>
+                            <button
+                              type="button"
+                              disabled={isSelected}
+                              onClick={() => addPart(itemKey)}
+                              className="grid size-7 shrink-0 place-items-center rounded-full text-primary hover:bg-primary-fixed disabled:opacity-40"
+                              aria-label={`Agregar ${item.kind === "question" ? item.label : item.title}`}
+                            >
+                              <Icon>{isSelected ? "check" : "add"}</Icon>
+                            </button>
+                          </div>
+                          {item.kind === "repeatable" && (
+                            <details className="mt-2 ml-7">
+                              <summary className="cursor-pointer text-xs text-primary">
+                                Ver preguntas del grupo
+                              </summary>
+                              <div className="mt-2 space-y-1">
+                                {item.fields.map((field) => {
+                                  const fieldKey = groupPartKey(
+                                    section.key,
+                                    item.id,
+                                    [field.id],
+                                  );
+                                  const fieldSelected = includesPart(
+                                    template.sectionKeys,
+                                    parseCompositionPart(fieldKey)!,
+                                  );
+                                  return (
+                                    <div
+                                      key={field.id}
+                                      draggable={!fieldSelected}
+                                      onDragStart={(event) =>
+                                        beginDrag(event, fieldKey, "library")
+                                      }
+                                      onDragEnd={() => setDragged(null)}
+                                      className="flex cursor-grab items-start gap-2 rounded-md border border-outline-variant/60 bg-surface p-2 text-xs active:cursor-grabbing"
+                                    >
+                                      <span className="min-w-0 flex-1">
+                                        {field.label}
+                                      </span>
+                                      <button
+                                        type="button"
+                                        disabled={fieldSelected}
+                                        onClick={() => addPart(fieldKey)}
+                                        className="shrink-0 font-semibold text-primary disabled:opacity-40"
+                                        aria-label={`Agregar ${field.label}`}
+                                      >
+                                        {fieldSelected ? "Incluida" : "Agregar"}
+                                      </button>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            </details>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </details>
               </article>
             ))}
 
             {available.length === 0 && (
               <p className="px-2 py-8 text-center text-sm text-on-surface-variant">
-                {template.sectionKeys.length === FORM_SECTIONS.length
-                  ? "Ya agregaste las 17 secciones."
-                  : "No hay secciones que coincidan."}
+                No hay bloques o preguntas que coincidan.
               </p>
             )}
           </div>
@@ -313,7 +466,7 @@ export function FormBuilder({
                 Estructura del formulario
               </h2>
               <p className="mt-1 text-sm text-on-surface-variant">
-                {selected.length} secciones · {totalQuestions} preguntas base
+                {selected.length} elementos · {totalQuestions} preguntas
               </p>
             </div>
             <div className="flex items-center gap-2 text-sm text-on-surface-variant">
@@ -327,16 +480,16 @@ export function FormBuilder({
             onDrop={(event) => dropAt(event, template.sectionKeys.length)}
             className="min-h-[460px] space-y-3 p-4 md:p-6"
           >
-            {selected.map((section, index) => (
+            {selected.map((entry, index) => (
               <article
-                key={section.key}
+                key={entry.key}
                 draggable
-                onDragStart={(event) => beginDrag(event, section.key, "canvas")}
+                onDragStart={(event) => beginDrag(event, entry.key, "canvas")}
                 onDragEnd={() => setDragged(null)}
                 onDragOver={(event) => event.preventDefault()}
                 onDrop={(event) => dropAt(event, index)}
                 className={`rounded-xl border bg-surface-container-lowest p-4 transition md:p-5 ${
-                  dragged?.key === section.key
+                  dragged?.key === entry.key
                     ? "border-primary opacity-50"
                     : "border-outline-variant/80 hover:border-outline"
                 }`}
@@ -350,63 +503,175 @@ export function FormBuilder({
                   </span>
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">
-                      <h3 className="font-semibold">{section.title}</h3>
+                      <h3 className="font-semibold">{entry.title}</h3>
                       <span className="rounded-full bg-surface-container px-2 py-0.5 text-xs text-on-surface-variant">
-                        Bloque {section.number}
+                        {entry.part.kind === "section"
+                          ? "Bloque completo"
+                          : entry.part.kind === "group"
+                            ? "Grupo de preguntas"
+                            : "Pregunta individual"}{" "}
+                        · {entry.section.title}
                       </span>
-                      {section.minimumAge && (
+                      {entry.section.minimumAge && (
                         <span className="rounded-full bg-secondary-container px-2 py-0.5 text-xs text-on-secondary-container">
-                          Solo {section.minimumAge}+
+                          Solo {entry.section.minimumAge}+
                         </span>
                       )}
-                      {section.sensitive && (
+                      {entry.section.sensitive && (
                         <span className="inline-flex items-center gap-1 rounded-full bg-error-container px-2 py-0.5 text-xs text-on-error-container">
                           <Icon>lock</Icon> Sensible
                         </span>
                       )}
                     </div>
                     <p className="mt-1 text-sm text-on-surface-variant">
-                      {countSectionQuestions(section)} preguntas
-                      {section.items.some((item) => item.kind === "repeatable")
-                        ? " · Incluye grupos repetibles"
-                        : ""}
+                      {entry.questionCount}{" "}
+                      {entry.questionCount === 1 ? "pregunta" : "preguntas"}
                     </p>
-                    {section.description && (
-                      <p className="mt-2 line-clamp-2 text-sm text-on-surface-variant">
-                        {section.description}
-                      </p>
-                    )}
+                    {entry.part.kind === "section" &&
+                      entry.section.description && (
+                        <p className="mt-2 line-clamp-2 text-sm text-on-surface-variant">
+                          {entry.section.description}
+                        </p>
+                      )}
                   </div>
 
                   <div className="flex shrink-0 items-center">
                     <button
                       type="button"
-                      onClick={() => moveSection(section.key, -1)}
+                      onClick={() => movePart(entry.key, -1)}
                       disabled={index === 0}
                       className="grid size-8 place-items-center rounded-full hover:bg-surface-container disabled:opacity-25"
-                      aria-label={`Subir ${section.title}`}
+                      aria-label={`Subir ${entry.title}`}
                     >
                       <Icon>arrow_upward</Icon>
                     </button>
                     <button
                       type="button"
-                      onClick={() => moveSection(section.key, 1)}
+                      onClick={() => movePart(entry.key, 1)}
                       disabled={index === selected.length - 1}
                       className="grid size-8 place-items-center rounded-full hover:bg-surface-container disabled:opacity-25"
-                      aria-label={`Bajar ${section.title}`}
+                      aria-label={`Bajar ${entry.title}`}
                     >
                       <Icon>arrow_downward</Icon>
                     </button>
                     <button
                       type="button"
-                      onClick={() => removeSection(section.key)}
+                      onClick={() => removePart(entry.key)}
                       className="grid size-8 place-items-center rounded-full text-error hover:bg-error-container"
-                      aria-label={`Quitar ${section.title}`}
+                      aria-label={`Quitar ${entry.title}`}
                     >
                       <Icon>close</Icon>
                     </button>
                   </div>
                 </div>
+                {entry.part.kind === "section" && (
+                  <details className="mt-4 border-t border-outline-variant/60 pt-3">
+                    <summary className="cursor-pointer text-sm font-semibold text-primary">
+                      Ver {entry.questionCount} preguntas incluidas
+                    </summary>
+                    <div className="mt-3 space-y-2 text-sm text-on-surface-variant">
+                      {entry.section.items.flatMap((item) =>
+                        item.kind === "question"
+                          ? [
+                              <div
+                                key={item.id}
+                                className="flex items-start justify-between gap-3 rounded-lg bg-surface-container-low p-2"
+                              >
+                                <span>{item.label}</span>
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    update(
+                                      "sectionKeys",
+                                      removeQuestionFromSection(
+                                        template.sectionKeys,
+                                        entry.section.key,
+                                        item.id,
+                                      ),
+                                    )
+                                  }
+                                  className="shrink-0 text-error hover:underline"
+                                  aria-label={`Quitar ${item.label}`}
+                                >
+                                  Quitar
+                                </button>
+                              </div>,
+                            ]
+                          : item.fields.map((field) => (
+                              <div
+                                key={`${item.id}.${field.id}`}
+                                className="flex items-start justify-between gap-3 rounded-lg bg-surface-container-low p-2"
+                              >
+                                <span>
+                                  {item.title}: {field.label}
+                                </span>
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    update(
+                                      "sectionKeys",
+                                      removeQuestionFromSection(
+                                        template.sectionKeys,
+                                        entry.section.key,
+                                        item.id,
+                                        field.id,
+                                      ),
+                                    )
+                                  }
+                                  className="shrink-0 text-error hover:underline"
+                                  aria-label={`Quitar ${field.label}`}
+                                >
+                                  Quitar
+                                </button>
+                              </div>
+                            )),
+                      )}
+                    </div>
+                  </details>
+                )}
+                {entry.part.kind === "group" &&
+                  entry.item?.kind === "repeatable" && (
+                    <details className="mt-4 border-t border-outline-variant/60 pt-3">
+                      <summary className="cursor-pointer text-sm font-semibold text-primary">
+                        Ver y ajustar {entry.questionCount} preguntas del grupo
+                      </summary>
+                      <div className="mt-3 space-y-2">
+                        {entry.item.fields
+                          .filter(
+                            (field) =>
+                              entry.part.kind === "group" &&
+                              (entry.part.fieldIds === null ||
+                                entry.part.fieldIds.includes(field.id)),
+                          )
+                          .map((field) => (
+                            <div
+                              key={field.id}
+                              className="flex items-start justify-between gap-3 rounded-lg bg-surface-container-low p-2 text-sm"
+                            >
+                              <span>{field.label}</span>
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  update(
+                                    "sectionKeys",
+                                    removeGroupField(
+                                      template.sectionKeys,
+                                      entry.section.key,
+                                      entry.item!.id,
+                                      field.id,
+                                    ),
+                                  )
+                                }
+                                className="shrink-0 text-error hover:underline"
+                                aria-label={`Quitar ${field.label}`}
+                              >
+                                Quitar
+                              </button>
+                            </div>
+                          ))}
+                      </div>
+                    </details>
+                  )}
               </article>
             ))}
 
@@ -420,11 +685,11 @@ export function FormBuilder({
                     view_agenda
                   </span>
                   <h3 className="mt-3 font-headline-md text-lg">
-                    Agrega tu primera sección
+                    Agrega tu primer bloque o pregunta
                   </h3>
                   <p className="mx-auto mt-2 max-w-sm text-sm text-on-surface-variant">
-                    Arrastra bloques desde el banco o usa el botón “+”. Las
-                    preguntas se reutilizan desde una sola fuente.
+                    Arrastra bloques o preguntas desde el banco, o usa el botón
+                    “+”. Las preguntas se reutilizan desde una sola fuente.
                   </p>
                 </div>
               </div>

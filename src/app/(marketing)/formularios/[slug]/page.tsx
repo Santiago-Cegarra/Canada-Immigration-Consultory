@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { PublicForm } from "@/modules/formularios/components/public-form";
 import { AccessKeyForm } from "@/modules/formularios/components/access-key-form";
-import { FORM_SECTION_BY_KEY } from "@/modules/formularios/sections";
+import { resolveFormSections } from "@/modules/formularios/composition";
 import { findFormTemplateBySlug } from "@/modules/formularios/templates";
 import { readFormAccess } from "@/modules/formularios/access";
 
@@ -36,9 +36,7 @@ export default async function GeneratedFormPage({ params }: FormPageProps) {
     );
   }
 
-  const sections = template.sectionKeys
-    .map((key) => FORM_SECTION_BY_KEY.get(key))
-    .filter((section) => section !== undefined);
+  const sections = resolveFormSections(template.sectionKeys);
 
   if (!sections.length) notFound();
 

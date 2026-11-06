@@ -1,5 +1,3 @@
-import type { SectionKey } from "./sections";
-
 export type FormTemplateStatusValue = "DRAFT" | "PUBLISHED";
 
 export type FormTemplateEditorValue = {
@@ -7,7 +5,8 @@ export type FormTemplateEditorValue = {
   name: string;
   slug: string;
   description: string;
-  sectionKeys: SectionKey[];
+  /** Orden de bloques y preguntas seleccionadas del banco. */
+  sectionKeys: string[];
   status: FormTemplateStatusValue;
 };
 

@@ -18,7 +18,7 @@ export type SanitizedSubmission =
 
 function matchesRule(
   rule: VisibilityRule | undefined,
-  sectionKey: string,
+  scopePrefix: string,
   answers: Answers,
 ): boolean {
   if (!rule) return true;
@@ -29,7 +29,7 @@ function matchesRule(
     fieldId: string;
     equals: string | boolean;
   }) => {
-    const answer = answers[`${sectionKey}.${fieldId}`];
+    const answer = answers[`${scopePrefix}.${fieldId}`];
     return typeof equals === "boolean"
       ? answer === (equals ? "yes" : "no")
       : answer === equals;
@@ -83,6 +83,9 @@ function validateValue(
   if (question.input === "email" && !/^\S+@\S+\.\S+$/.test(value)) {
     return `Email inválido: ${question.label}`;
   }
+  if (question.input === "number" && !Number.isFinite(Number(value))) {
+    return `Número inválido: ${question.label}`;
+  }
   return null;
 }
 
@@ -91,13 +94,14 @@ function knownAnswerPath(
   sections: readonly SectionDefinition[],
 ): boolean {
   const parts = path.split(".");
-  const section = sections.find(({ key }) => key === parts[0]);
-  if (!section) return false;
-  const item = section.items.find(({ id }) => id === parts[1]);
-  if (!item) return false;
-  if (item.kind === "question") return parts.length === 2;
-  if (parts.length !== 4 || !/^\d+$/.test(parts[2])) return false;
-  return item.fields.some(({ id }) => id === parts[3]);
+  return sections.some((section) => {
+    if (section.key !== parts[0]) return false;
+    const item = section.items.find(({ id }) => id === parts[1]);
+    if (!item) return false;
+    if (item.kind === "question") return parts.length === 2;
+    if (parts.length !== 4 || !/^\d+$/.test(parts[2])) return false;
+    return item.fields.some(({ id }) => id === parts[3]);
+  });
 }
 
 export function sanitizeSubmission(
@@ -162,6 +166,15 @@ export function sanitizeSubmission(
       for (const index of indexes) {
         const row: JsonObject = {};
         for (const field of item.fields) {
+          if (
+            !matchesRule(
+              field.visibleWhen,
+              `${section.key}.${item.id}.${index}`,
+              answers,
+            )
+          ) {
+            continue;
+          }
           const value = answers[`${prefix}${index}.${field.id}`] ?? "";
           const error = validateValue(field, value);
           if (error) return { ok: false, message: error };
@@ -173,7 +186,14 @@ export function sanitizeSubmission(
     }
 
     if (!Object.keys(sectionData).length) continue;
-    (section.sensitive ? sensitiveData : data)[section.key] = sectionData;
+    const target = section.sensitive ? sensitiveData : data;
+    const previous = target[section.key];
+    target[section.key] = {
+      ...(previous && typeof previous === "object" && !Array.isArray(previous)
+        ? previous
+        : {}),
+      ...sectionData,
+    };
   }
 
   const personal = data["personal-data"];

@@ -30,6 +30,7 @@ export type FieldInput =
   | "text"
   | "textarea"
   | "yes-no"
+  | "number"
   | "date"
   | "month"
   | "email"
@@ -96,6 +97,50 @@ function repeatable(
 const yes = (fieldId: string): VisibilityRule => ({ fieldId, equals: true });
 const no = (fieldId: string): VisibilityRule => ({ fieldId, equals: false });
 
+const IMMIGRATION_STATUS_OPTIONS = [
+  "Ciudadano",
+  "Residente permanente",
+  "Visitante",
+  "Trabajador",
+  "Estudiante",
+  "Persona protegida",
+  "Solicitante de refugio",
+  "Extranjero",
+  "Otro",
+] as const;
+
+const CIVIL_STATUS_OPTIONS = [
+  "Matrimonio anulado",
+  "Unión de hecho",
+  "Divorciado/a",
+  "Separado/a legalmente",
+  "Casado/a",
+  "Soltero/a",
+  "Viudo/a",
+] as const;
+
+const EDUCATION_LEVEL_OPTIONS = [
+  "Ninguno",
+  "Secundaria o menos",
+  "Certificado o diploma de oficio/aprendizaje",
+  "Certificado o diploma no universitario",
+  "Postsecundaria sin título",
+  "Licenciatura o bachelor",
+  "Posgrado sin título",
+  "Maestría",
+  "Doctorado o PhD",
+] as const;
+
+const EYE_COLOUR_OPTIONS = [
+  "Negro",
+  "Azul",
+  "Marrón",
+  "Verde",
+  "Gris",
+  "Avellana",
+  "Otro",
+] as const;
+
 /**
  * Banco canónico de secciones derivado de `forms.txt`.
  *
@@ -121,21 +166,453 @@ export const FORM_SECTIONS: readonly SectionDefinition[] = [
         required: true,
         visibleWhen: yes("hasOtherNames"),
       }),
-      question("documentSex", "Sexo, según su documento", "text", {
+      question("documentSex", "Sexo, según su documento", "select", {
         required: true,
+        options: ["F", "M", "U", "X"],
+        helpText: "F: femenino, M: masculino, U: desconocido, X: otro género.",
+      }),
+      question("heightCentimetres", "Altura en centímetros", "number"),
+      question("eyeColour", "Color de ojos", "select", {
+        options: EYE_COLOUR_OPTIONS,
       }),
       question("birthDate", "Fecha de nacimiento", "date", { required: true }),
       question("birthCity", "Ciudad de nacimiento", "text", { required: true }),
       question("birthCountry", "País de nacimiento", "text", {
         required: true,
       }),
-      question("nationalities", "Nacionalidad o nacionalidades", "text", {
+      question("nationalities", "País de ciudadanía principal", "text", {
         required: true,
       }),
+      question("secondCitizenship", "Segundo país de ciudadanía, si aplica"),
       question("irccUci", "UCI de IRCC, si lo conoce"),
       question("desiredProcess", "Tipo de trámite que desea realizar", "text", {
         required: true,
       }),
+      question(
+        "applicationProgram",
+        "Programa bajo el cual presenta la solicitud",
+        "select",
+        {
+          options: ["Familiar", "Económico", "Refugio", "Otro"],
+          helpText:
+            "Campo requerido por el IMM 0008 para solicitudes de residencia permanente.",
+        },
+      ),
+      question("applicationCategory", "Categoría específica de la solicitud"),
+      question(
+        "totalFamilyMembers",
+        "Número total de familiares incluidos en la solicitud, incluyéndose usted",
+        "number",
+      ),
+      question(
+        "correspondenceLanguage",
+        "Idioma preferido para correspondencia",
+        "select",
+        {
+          options: ["Inglés", "Francés"],
+        },
+      ),
+      question(
+        "interviewLanguage",
+        "Idioma preferido para la entrevista",
+        "select",
+        {
+          options: ["Inglés", "Francés", "Otro"],
+        },
+      ),
+      question(
+        "interpreterRequested",
+        "¿Solicita intérprete para la entrevista?",
+        "yes-no",
+      ),
+      question(
+        "intendedProvince",
+        "Provincia o territorio donde planea vivir en Canadá",
+      ),
+      question(
+        "intendedCity",
+        "Ciudad o localidad donde planea vivir en Canadá",
+      ),
+      question("plansToLiveInQuebec", "¿Planea vivir en Quebec?", "yes-no"),
+      question(
+        "hasCsq",
+        "¿Ha recibido el Certificat de sélection du Québec (CSQ)?",
+        "yes-no",
+        {
+          visibleWhen: yes("plansToLiveInQuebec"),
+        },
+      ),
+      question("csqNumber", "Número del CSQ", "text", {
+        visibleWhen: yes("hasCsq"),
+      }),
+      question("csqAppliedAt", "Fecha en que solicitó el CSQ", "date", {
+        visibleWhen: no("hasCsq"),
+      }),
+      question(
+        "hasDependants",
+        "¿Incluye dependientes en esta solicitud?",
+        "yes-no",
+      ),
+      repeatable(
+        "dependants",
+        "Dependientes incluidos en la solicitud",
+        [
+          question("familyNames", "Apellidos", "text", { required: true }),
+          question("givenNames", "Nombres", "text", { required: true }),
+          question(
+            "hasOtherNames",
+            "¿Ha utilizado otros nombres o alias?",
+            "yes-no",
+            {
+              required: true,
+            },
+          ),
+          question("otherFamilyNames", "Otros apellidos utilizados", "text", {
+            required: true,
+            visibleWhen: yes("hasOtherNames"),
+          }),
+          question("otherGivenNames", "Otros nombres utilizados", "text", {
+            required: true,
+            visibleWhen: yes("hasOtherNames"),
+          }),
+          question("uci", "UCI de IRCC, si lo conoce"),
+          question("sex", "Sexo", "select", {
+            required: true,
+            options: ["F", "M", "U", "X"],
+          }),
+          question("heightCentimetres", "Altura en centímetros", "number"),
+          question("eyeColour", "Color de ojos", "select", {
+            options: EYE_COLOUR_OPTIONS,
+          }),
+          question("birthDate", "Fecha de nacimiento", "date", {
+            required: true,
+          }),
+          question("birthCity", "Ciudad o localidad de nacimiento", "text", {
+            required: true,
+          }),
+          question("birthCountry", "País de nacimiento", "text", {
+            required: true,
+          }),
+          question(
+            "primaryCitizenship",
+            "País de ciudadanía principal",
+            "text",
+            {
+              required: true,
+            },
+          ),
+          question(
+            "secondCitizenship",
+            "Segundo país de ciudadanía, si aplica",
+          ),
+          question(
+            "relationship",
+            "Relación con el solicitante principal",
+            "select",
+            {
+              required: true,
+              options: [
+                "Hijo/a adoptivo/a",
+                "Padre o madre adoptivo/a",
+                "Hijo/a",
+                "Pareja de hecho",
+                "Nieto/a",
+                "Padre o madre",
+                "Esposo/a",
+                "Hijastro/a",
+                "Nietastro/a",
+                "Otro",
+              ],
+            },
+          ),
+          question("relationshipOther", "Especifique la relación", "text", {
+            required: true,
+            visibleWhen: { fieldId: "relationship", equals: "Otro" },
+          }),
+          question(
+            "accompaniesToCanada",
+            "¿Acompañará al solicitante a Canadá?",
+            "yes-no",
+            {
+              required: true,
+            },
+          ),
+          question(
+            "nonAccompanyingReason",
+            "Explique por qué no acompañará al solicitante",
+            "textarea",
+            {
+              required: true,
+              visibleWhen: no("accompaniesToCanada"),
+            },
+          ),
+          question(
+            "dependantType",
+            "Tipo de dependiente, si corresponde",
+            "select",
+            {
+              options: ["Tipo A", "Tipo B", "Tipo C", "No aplica"],
+            },
+          ),
+          question(
+            "currentResidenceCountry",
+            "País de residencia actual",
+            "text",
+            {
+              required: true,
+            },
+          ),
+          question(
+            "currentResidenceStatus",
+            "Estatus migratorio actual",
+            "select",
+            {
+              required: true,
+              options: IMMIGRATION_STATUS_OPTIONS,
+            },
+          ),
+          question(
+            "currentResidenceStatusOther",
+            "Explique el estatus ‘Otro’",
+            "text",
+            {
+              required: true,
+              visibleWhen: {
+                fieldId: "currentResidenceStatus",
+                equals: "Otro",
+              },
+            },
+          ),
+          question("currentResidenceFrom", "Residencia actual desde", "date", {
+            required: true,
+          }),
+          question(
+            "currentResidenceTo",
+            "Residencia actual hasta, si corresponde",
+            "date",
+          ),
+          question(
+            "lastCanadaEntryDate",
+            "Fecha de la última entrada a Canadá, si aplica",
+            "date",
+          ),
+          question(
+            "lastCanadaEntryPlace",
+            "Lugar de la última entrada a Canadá, si aplica",
+          ),
+          question(
+            "livedInOtherCountry",
+            "En los últimos 5 años, ¿vivió más de 6 meses en otro país?",
+            "yes-no",
+            { required: true },
+          ),
+          question(
+            "previousResidenceDetails",
+            "Por cada residencia anterior indique país, estatus, explicación de ‘Otro’ y fechas desde/hasta",
+            "textarea",
+            { required: true, visibleWhen: yes("livedInOtherCountry") },
+          ),
+          question("civilStatus", "Estado civil actual", "select", {
+            required: true,
+            options: CIVIL_STATUS_OPTIONS,
+          }),
+          question(
+            "currentRelationshipDate",
+            "Fecha de matrimonio o inicio de unión de hecho",
+            "date",
+            {
+              visibleWhen: {
+                anyOf: [
+                  { fieldId: "civilStatus", equals: "Casado/a" },
+                  { fieldId: "civilStatus", equals: "Unión de hecho" },
+                ],
+              },
+            },
+          ),
+          question(
+            "currentPartnerFamilyNames",
+            "Apellidos de la pareja actual",
+            "text",
+            {
+              visibleWhen: {
+                anyOf: [
+                  { fieldId: "civilStatus", equals: "Casado/a" },
+                  { fieldId: "civilStatus", equals: "Unión de hecho" },
+                ],
+              },
+            },
+          ),
+          question(
+            "currentPartnerGivenNames",
+            "Nombres de la pareja actual",
+            "text",
+            {
+              visibleWhen: {
+                anyOf: [
+                  { fieldId: "civilStatus", equals: "Casado/a" },
+                  { fieldId: "civilStatus", equals: "Unión de hecho" },
+                ],
+              },
+            },
+          ),
+          question(
+            "hadPreviousRelationship",
+            "¿Estuvo casado/a o en unión de hecho anteriormente?",
+            "yes-no",
+            {
+              required: true,
+            },
+          ),
+          question(
+            "previousRelationshipDetails",
+            "Indique apellidos, nombres, fecha de nacimiento, tipo de relación y fechas desde/hasta",
+            "textarea",
+            { required: true, visibleWhen: yes("hadPreviousRelationship") },
+          ),
+          question(
+            "hasValidPassport",
+            "¿Tiene pasaporte o documento de viaje válido?",
+            "yes-no",
+            {
+              required: true,
+            },
+          ),
+          question(
+            "passportNumber",
+            "Número de pasaporte o documento de viaje",
+            "text",
+            {
+              required: true,
+              visibleWhen: yes("hasValidPassport"),
+            },
+          ),
+          question("passportCountry", "País emisor del pasaporte", "text", {
+            required: true,
+            visibleWhen: yes("hasValidPassport"),
+          }),
+          question(
+            "passportIssuedAt",
+            "Fecha de emisión del pasaporte",
+            "date",
+            {
+              required: true,
+              visibleWhen: yes("hasValidPassport"),
+            },
+          ),
+          question(
+            "passportExpiresAt",
+            "Fecha de vencimiento del pasaporte",
+            "date",
+            {
+              required: true,
+              visibleWhen: yes("hasValidPassport"),
+            },
+          ),
+          question(
+            "taiwanPassportWithPersonalId",
+            "¿Usará un pasaporte de Taiwán que muestra su identificación personal?",
+            "yes-no",
+            {
+              visibleWhen: yes("hasValidPassport"),
+            },
+          ),
+          question(
+            "israeliNationalPassport",
+            "¿Usará un pasaporte nacional israelí?",
+            "yes-no",
+            {
+              visibleWhen: yes("hasValidPassport"),
+            },
+          ),
+          question(
+            "hasValidNationalId",
+            "¿Tiene un documento nacional de identidad válido?",
+            "yes-no",
+            {
+              required: true,
+            },
+          ),
+          question(
+            "nationalIdNumber",
+            "Número del documento nacional",
+            "text",
+            {
+              required: true,
+              visibleWhen: yes("hasValidNationalId"),
+            },
+          ),
+          question(
+            "nationalIdCountry",
+            "País emisor del documento nacional",
+            "text",
+            {
+              required: true,
+              visibleWhen: yes("hasValidNationalId"),
+            },
+          ),
+          question(
+            "nationalIdIssuedAt",
+            "Fecha de emisión del documento nacional",
+            "date",
+            {
+              required: true,
+              visibleWhen: yes("hasValidNationalId"),
+            },
+          ),
+          question(
+            "nationalIdExpiresAt",
+            "Fecha de vencimiento del documento nacional",
+            "date",
+            {
+              visibleWhen: yes("hasValidNationalId"),
+            },
+          ),
+          question(
+            "highestEducationLevel",
+            "Nivel de educación más alto",
+            "select",
+            {
+              options: EDUCATION_LEVEL_OPTIONS,
+            },
+          ),
+          question(
+            "formalEducationYears",
+            "Años totales de educación formal",
+            "number",
+          ),
+          question("currentOccupation", "Ocupación actual"),
+          question("intendedOccupation", "Ocupación prevista en Canadá"),
+          question("nativeLanguage", "Idioma materno"),
+          question(
+            "officialLanguages",
+            "¿Puede comunicarse en inglés, francés, ambos o ninguno?",
+            "select",
+            {
+              options: ["Inglés", "Francés", "Ambos", "Ninguno"],
+            },
+          ),
+          question(
+            "preferredOfficialLanguage",
+            "Idioma en el que se siente más cómodo/a",
+            "select",
+            {
+              options: ["Inglés", "Francés"],
+              visibleWhen: { fieldId: "officialLanguages", equals: "Ambos" },
+            },
+          ),
+          question(
+            "hasLanguageTest",
+            "¿Presentó un examen de idioma ante una entidad designada?",
+            "yes-no",
+          ),
+        ],
+        {
+          description:
+            "El IMM 0008 admite hasta 5 dependientes; declare también quienes no acompañarán al solicitante. Para más de 5, IRCC exige el IMM 0008DEP.",
+          minimumItems: 1,
+          visibleWhen: yes("hasDependants"),
+        },
+      ),
     ],
   },
   {
@@ -149,10 +626,19 @@ export const FORM_SECTIONS: readonly SectionDefinition[] = [
         "text",
         { required: true },
       ),
-      question("currentStatus", "Estatus en ese país", "text", {
+      question("currentStatus", "Estatus en ese país", "select", {
         required: true,
+        options: IMMIGRATION_STATUS_OPTIONS,
       }),
-      question("currentStatusOther", "Si su estatus es “otro”, explique"),
+      question(
+        "currentStatusOther",
+        "Si su estatus es “otro”, explique",
+        "text",
+        {
+          required: true,
+          visibleWhen: { fieldId: "currentStatus", equals: "Otro" },
+        },
+      ),
       question(
         "currentStatusFrom",
         "Fecha desde la que tiene ese estatus",
@@ -165,6 +651,20 @@ export const FORM_SECTIONS: readonly SectionDefinition[] = [
         "date",
       ),
       question(
+        "currentResidenceTo",
+        "Fecha hasta la que reside o residió en este país, si corresponde",
+        "date",
+      ),
+      question(
+        "lastCanadaEntryDate",
+        "Fecha de su última entrada a Canadá, si aplica",
+        "date",
+      ),
+      question(
+        "lastCanadaEntryPlace",
+        "Lugar de su última entrada a Canadá, si aplica",
+      ),
+      question(
         "livedInOtherCountry",
         "Durante los últimos 5 años, ¿vivió por más de 6 meses en un país distinto de su país de nacionalidad y residencia actual?",
         "yes-no",
@@ -175,7 +675,14 @@ export const FORM_SECTIONS: readonly SectionDefinition[] = [
         "Países de residencia anteriores",
         [
           question("country", "País", "text", { required: true }),
-          question("status", "Estatus migratorio", "text", { required: true }),
+          question("status", "Estatus migratorio", "select", {
+            required: true,
+            options: IMMIGRATION_STATUS_OPTIONS,
+          }),
+          question("statusOther", "Explique el estatus ‘Otro’", "text", {
+            required: true,
+            visibleWhen: { fieldId: "status", equals: "Otro" },
+          }),
           question("from", "Desde", "date", { required: true }),
           question("to", "Hasta", "date", { required: true }),
         ],
@@ -210,8 +717,9 @@ export const FORM_SECTIONS: readonly SectionDefinition[] = [
     number: 3,
     title: "Estado civil y pareja actual",
     items: [
-      question("civilStatus", "Estado civil actual", "text", {
+      question("civilStatus", "Estado civil actual", "select", {
         required: true,
+        options: CIVIL_STATUS_OPTIONS,
       }),
       question("marriageDate", "Fecha de matrimonio, si corresponde", "date"),
       question(
@@ -276,7 +784,11 @@ export const FORM_SECTIONS: readonly SectionDefinition[] = [
         "preferredOfficialLanguage",
         "¿En cuál de esos idiomas se siente más cómodo/a?",
         "select",
-        { options: ["Inglés", "Francés", "No aplica"] },
+        {
+          required: true,
+          options: ["Inglés", "Francés"],
+          visibleWhen: { fieldId: "officialLanguages", equals: "Ambos" },
+        },
       ),
       question(
         "hasLanguageTest",
@@ -295,25 +807,39 @@ export const FORM_SECTIONS: readonly SectionDefinition[] = [
     number: 6,
     title: "Pasaporte o documento de viaje",
     items: [
-      question("passportNumber", "Número", "text", { required: true }),
-      question("passportCountry", "País emisor", "text", { required: true }),
+      question(
+        "hasValidPassport",
+        "¿Tiene un pasaporte o documento de viaje válido?",
+        "yes-no",
+        { required: true },
+      ),
+      question("passportNumber", "Número", "text", {
+        required: true,
+        visibleWhen: yes("hasValidPassport"),
+      }),
+      question("passportCountry", "País emisor", "text", {
+        required: true,
+        visibleWhen: yes("hasValidPassport"),
+      }),
       question("passportIssuedAt", "Fecha de emisión", "date", {
         required: true,
+        visibleWhen: yes("hasValidPassport"),
       }),
       question("passportExpiresAt", "Fecha de vencimiento", "date", {
         required: true,
+        visibleWhen: yes("hasValidPassport"),
       }),
       question(
         "taiwanPassportWithPersonalId",
         "¿Utilizará un pasaporte emitido por el Ministerio de Relaciones Exteriores de Taiwán que incluya su número de identificación personal?",
         "yes-no",
-        { required: true },
+        { required: true, visibleWhen: yes("hasValidPassport") },
       ),
       question(
         "israeliNationalPassport",
         "¿Utilizará un pasaporte nacional israelí?",
         "yes-no",
-        { required: true },
+        { required: true, visibleWhen: yes("hasValidPassport") },
       ),
     ],
   },
@@ -324,7 +850,7 @@ export const FORM_SECTIONS: readonly SectionDefinition[] = [
     items: [
       question(
         "hasNationalId",
-        "¿Tiene cédula o documento nacional de identidad?",
+        "¿Tiene una cédula o documento nacional de identidad válido?",
         "yes-no",
         { required: true },
       ),
@@ -392,9 +918,53 @@ export const FORM_SECTIONS: readonly SectionDefinition[] = [
       ),
       question(
         "mailingAddress",
-        "Dirección postal completa, incluyendo apartado postal si utiliza uno",
+        "Dirección postal completa (referencia)",
         "textarea",
-        { required: true, visibleWhen: no("sameMailingAddress") },
+        { visibleWhen: no("sameMailingAddress") },
+      ),
+      question("mailingPoBox", "Apartado postal, si corresponde", "text", {
+        visibleWhen: no("sameMailingAddress"),
+      }),
+      question("mailingUnit", "Apartamento o unidad postal", "text", {
+        visibleWhen: no("sameMailingAddress"),
+      }),
+      question("mailingStreetNumber", "Número del inmueble postal", "text", {
+        visibleWhen: no("sameMailingAddress"),
+      }),
+      question("mailingStreet", "Calle de la dirección postal", "text", {
+        visibleWhen: no("sameMailingAddress"),
+      }),
+      question("mailingCity", "Ciudad de la dirección postal", "text", {
+        required: true,
+        visibleWhen: no("sameMailingAddress"),
+      }),
+      question(
+        "mailingRegion",
+        "Provincia o estado de la dirección postal",
+        "text",
+        {
+          visibleWhen: no("sameMailingAddress"),
+        },
+      ),
+      question("mailingCountry", "País de la dirección postal", "text", {
+        required: true,
+        visibleWhen: no("sameMailingAddress"),
+      }),
+      question(
+        "mailingPostalCode",
+        "Código postal de la dirección postal",
+        "text",
+        {
+          visibleWhen: no("sameMailingAddress"),
+        },
+      ),
+      question(
+        "mailingDistrict",
+        "Distrito de la dirección postal, si corresponde",
+        "text",
+        {
+          visibleWhen: no("sameMailingAddress"),
+        },
       ),
       question(
         "primaryPhone",
@@ -406,6 +976,15 @@ export const FORM_SECTIONS: readonly SectionDefinition[] = [
         required: true,
         options: ["Celular", "Casa", "Trabajo"],
       }),
+      question(
+        "primaryPhoneLocation",
+        "Ubicación del teléfono principal",
+        "select",
+        {
+          required: true,
+          options: ["Canadá o Estados Unidos", "Otro país"],
+        },
+      ),
       question("primaryPhoneExtension", "Extensión, si corresponde"),
       question(
         "alternatePhone",
@@ -414,9 +993,24 @@ export const FORM_SECTIONS: readonly SectionDefinition[] = [
       ),
       question(
         "alternatePhoneTypeAndExtension",
-        "Tipo y extensión, si corresponde",
+        "Información adicional del teléfono alternativo, si corresponde",
       ),
+      question("alternatePhoneType", "Tipo de teléfono alternativo", "select", {
+        options: ["Celular", "Casa", "Trabajo"],
+      }),
+      question(
+        "alternatePhoneLocation",
+        "Ubicación del teléfono alternativo",
+        "select",
+        {
+          options: ["Canadá o Estados Unidos", "Otro país"],
+        },
+      ),
+      question("alternatePhoneExtension", "Extensión del teléfono alternativo"),
       question("fax", "Fax, si tiene", "phone"),
+      question("faxLocation", "Ubicación del fax", "select", {
+        options: ["Canadá o Estados Unidos", "Otro país"],
+      }),
       question("email", "Correo electrónico", "email", { required: true }),
     ],
   },
@@ -425,6 +1019,29 @@ export const FORM_SECTIONS: readonly SectionDefinition[] = [
     number: 10,
     title: "Educación",
     items: [
+      question(
+        "highestEducationLevel",
+        "Nivel de educación más alto",
+        "select",
+        {
+          required: true,
+          options: EDUCATION_LEVEL_OPTIONS,
+        },
+      ),
+      question(
+        "formalEducationYears",
+        "Número total de años de educación formal, incluyendo primaria y secundaria",
+        "number",
+        { required: true },
+      ),
+      question("currentOccupation", "Ocupación actual", "text", {
+        required: true,
+        helpText: "Si no trabaja actualmente, indique “Sin empleo”.",
+      }),
+      question("intendedOccupation", "Ocupación prevista en Canadá", "text", {
+        required: true,
+        helpText: "Si no planea trabajar en Canadá, indique “Ninguna”.",
+      }),
       question(
         "hasPostSecondaryEducation",
         "¿Ha cursado estudios posteriores a la secundaria, incluyendo universidad, college o formación de oficios?",
@@ -686,6 +1303,25 @@ export const FORM_SECTIONS: readonly SectionDefinition[] = [
     number: 17,
     title: "Información adicional",
     items: [
+      question(
+        "shareEmploymentInformation",
+        "¿Autoriza que la información sobre su ocupación, educación y experiencia laboral pueda compartirse con posibles empleadores para ayudarles a contratar trabajadores?",
+        "yes-no",
+      ),
+      question(
+        "applicantDeclarationName",
+        "Nombre completo del solicitante para la declaración del IMM 0008",
+        "text",
+        {
+          helpText:
+            "Escribir el nombre aquí recopila la respuesta; no sustituye la firma requerida por IRCC.",
+        },
+      ),
+      question(
+        "applicantDeclarationDate",
+        "Fecha de la declaración del solicitante",
+        "date",
+      ),
       question(
         "additionalCircumstances",
         "¿Hay algún dato, cambio o circunstancia que debamos conocer para preparar su solicitud?",

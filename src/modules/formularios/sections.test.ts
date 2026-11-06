@@ -47,6 +47,58 @@ describe("banco de secciones de formularios", () => {
             `${section.title}: ${fieldId}`,
           ).toBe(true);
         }
+
+        if (item.kind !== "repeatable") continue;
+        const repeatableFieldIds = new Set(item.fields.map(({ id }) => id));
+        for (const field of item.fields) {
+          for (const fieldId of referencedFieldIds(field.visibleWhen)) {
+            expect(
+              repeatableFieldIds.has(fieldId),
+              `${section.title}: ${item.title}: ${fieldId}`,
+            ).toBe(true);
+          }
+        }
+      }
+    }
+  });
+
+  it("incluye los campos necesarios para preparar el IMM 0008", () => {
+    const expectedFields = new Map([
+      [
+        "personal-data",
+        [
+          "applicationProgram",
+          "applicationCategory",
+          "totalFamilyMembers",
+          "heightCentimetres",
+          "eyeColour",
+          "hasDependants",
+          "dependants",
+        ],
+      ],
+      ["residence-status", ["lastCanadaEntryDate", "lastCanadaEntryPlace"]],
+      ["passport", ["hasValidPassport"]],
+      [
+        "education",
+        [
+          "highestEducationLevel",
+          "formalEducationYears",
+          "currentOccupation",
+          "intendedOccupation",
+        ],
+      ],
+      [
+        "additional-information",
+        ["shareEmploymentInformation", "applicantDeclarationName"],
+      ],
+    ]);
+
+    for (const [sectionKey, fieldIds] of expectedFields) {
+      const section = FORM_SECTIONS.find(({ key }) => key === sectionKey);
+      expect(section, sectionKey).toBeDefined();
+      const actualIds = new Set(section?.items.map(({ id }) => id));
+      for (const fieldId of fieldIds) {
+        expect(actualIds.has(fieldId), `${sectionKey}: ${fieldId}`).toBe(true);
       }
     }
   });

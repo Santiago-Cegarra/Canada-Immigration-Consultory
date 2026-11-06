@@ -30,7 +30,8 @@ export default async function EditFormTemplatePage({
       </Link>
       <h1 className="mt-4 font-headline-lg text-3xl">Editar formulario</h1>
       <p className="mt-2 mb-8 text-on-surface-variant">
-        Reordena los bloques sin duplicar ni alterar sus preguntas.
+        Combina bloques completos y preguntas individuales; arrastra para
+        ordenar.
       </p>
       <FormBuilder initialTemplate={template} />
     </div>

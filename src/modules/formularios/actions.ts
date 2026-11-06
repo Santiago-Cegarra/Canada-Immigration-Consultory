@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { db } from "@/lib/db";
 import { requireAdmin } from "@/modules/auth/guards";
-import { SECTION_KEYS } from "./sections";
+import { isValidComposition } from "./composition";
 import type { FormTemplateEditorValue, SaveFormTemplateResult } from "./types";
 
 const templateSchema = z.object({
@@ -17,11 +17,7 @@ const templateSchema = z.object({
     .max(100)
     .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
   description: z.string().trim().max(500),
-  sectionKeys: z
-    .array(z.enum(SECTION_KEYS))
-    .min(1)
-    .max(SECTION_KEYS.length)
-    .refine((keys) => new Set(keys).size === keys.length),
+  sectionKeys: z.array(z.string().max(4096)).refine(isValidComposition),
   status: z.enum(["DRAFT", "PUBLISHED"]),
 });
 

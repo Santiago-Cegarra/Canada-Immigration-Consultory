@@ -21,7 +21,8 @@ export default async function NewFormTemplatePage() {
       </Link>
       <h1 className="mt-4 font-headline-lg text-3xl">Nuevo formulario</h1>
       <p className="mt-2 mb-8 text-on-surface-variant">
-        Selecciona las secciones, ordénalas y guarda la composición.
+        Selecciona bloques completos o preguntas individuales, ordénalos y
+        guarda.
       </p>
       <FormBuilder />
     </div>

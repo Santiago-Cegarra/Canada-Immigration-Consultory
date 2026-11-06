@@ -1,5 +1,5 @@
 import { db } from "@/lib/db";
-import { isSectionKey } from "./sections";
+import { parseCompositionPart } from "./composition";
 import type { FormTemplateEditorValue } from "./types";
 
 function toEditorValue(template: {
@@ -15,7 +15,9 @@ function toEditorValue(template: {
     name: template.name,
     slug: template.slug,
     description: template.description ?? "",
-    sectionKeys: template.sectionKeys.filter(isSectionKey),
+    sectionKeys: template.sectionKeys.filter(
+      (key) => parseCompositionPart(key) !== null,
+    ),
     status: template.status,
   };
 }

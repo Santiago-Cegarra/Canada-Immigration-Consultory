@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, useTransition } from "react";
+import { useMemo, useState, useTransition } from "react";
 import { saveFormSubmission } from "../submission-actions";
 import {
   countSectionQuestions,
@@ -38,7 +38,7 @@ function Icon({ children }: { children: string }) {
 
 function matchesRule(
   rule: VisibilityRule | undefined,
-  sectionKey: string,
+  scopePrefix: string,
   answers: AnswerMap,
 ): boolean {
   if (!rule) return true;
@@ -50,7 +50,7 @@ function matchesRule(
     fieldId: string;
     equals: string | boolean;
   }) => {
-    const answer = answers[`${sectionKey}.${fieldId}`];
+    const answer = answers[`${scopePrefix}.${fieldId}`];
     if (typeof equals === "boolean") {
       return answer === (equals ? "yes" : "no");
     }
@@ -185,8 +185,12 @@ export function PublicForm({
           (section) => !section.minimumAge || age >= section.minimumAge,
         );
   }, [answers, sections]);
-  const currentSection = visibleSections[currentIndex];
-  const progress = ((currentIndex + 1) / visibleSections.length) * 100;
+  const visibleIndex = Math.min(
+    currentIndex,
+    Math.max(0, visibleSections.length - 1),
+  );
+  const currentSection = visibleSections[visibleIndex];
+  const progress = ((visibleIndex + 1) / visibleSections.length) * 100;
   const totalQuestions = useMemo(
     () =>
       visibleSections.reduce(
@@ -195,12 +199,6 @@ export function PublicForm({
       ),
     [visibleSections],
   );
-
-  useEffect(() => {
-    if (currentIndex >= visibleSections.length) {
-      setCurrentIndex(Math.max(0, visibleSections.length - 1));
-    }
-  }, [currentIndex, visibleSections.length]);
 
   if (!currentSection) return null;
 
@@ -212,7 +210,7 @@ export function PublicForm({
   function nextStep() {
     const form = document.getElementById("generated-form") as HTMLFormElement;
     if (!form.reportValidity()) return;
-    setCurrentIndex((index) => Math.min(index + 1, visibleSections.length - 1));
+    setCurrentIndex(Math.min(visibleIndex + 1, visibleSections.length - 1));
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
@@ -221,7 +219,7 @@ export function PublicForm({
       id="generated-form"
       onSubmit={(event) => {
         event.preventDefault();
-        if (currentIndex < visibleSections.length - 1) {
+        if (visibleIndex < visibleSections.length - 1) {
           nextStep();
         } else {
           startSaving(async () => {
@@ -242,7 +240,7 @@ export function PublicForm({
       <div className="mb-6 rounded-2xl border border-outline-variant/70 bg-surface-container-lowest p-5 shadow-sm">
         <div className="flex flex-wrap items-center justify-between gap-3 text-sm">
           <span className="font-label-md text-primary">
-            Sección {currentIndex + 1} de {visibleSections.length}
+            Sección {visibleIndex + 1} de {visibleSections.length}
           </span>
           <span className="text-on-surface-variant">
             {totalQuestions} preguntas base
@@ -366,6 +364,15 @@ export function PublicForm({
                       </div>
                       <div className="grid gap-5 md:grid-cols-2">
                         {item.fields.map((field) => {
+                          if (
+                            !matchesRule(
+                              field.visibleWhen,
+                              `${groupKey}.${index}`,
+                              answers,
+                            )
+                          ) {
+                            return null;
+                          }
                           const name = `${groupKey}.${index}.${field.id}`;
                           return (
                             <div
@@ -417,10 +424,10 @@ export function PublicForm({
         <button
           type="button"
           onClick={() => {
-            setCurrentIndex((index) => Math.max(0, index - 1));
+            setCurrentIndex(Math.max(0, visibleIndex - 1));
             window.scrollTo({ top: 0, behavior: "smooth" });
           }}
-          disabled={currentIndex === 0}
+          disabled={visibleIndex === 0}
           className="inline-flex items-center gap-2 rounded-xl border border-outline-variant bg-surface-container-lowest px-5 py-3 font-label-md transition hover:bg-surface-container disabled:opacity-40"
         >
           <Icon>arrow_back</Icon> Anterior
@@ -439,13 +446,13 @@ export function PublicForm({
         >
           {isSaving
             ? "Guardando…"
-            : currentIndex === visibleSections.length - 1
+            : visibleIndex === visibleSections.length - 1
               ? "Enviar formulario"
               : "Siguiente"}
           <Icon>
             {isSaving
               ? "progress_activity"
-              : currentIndex === visibleSections.length - 1
+              : visibleIndex === visibleSections.length - 1
                 ? "send"
                 : "arrow_forward"}
           </Icon>

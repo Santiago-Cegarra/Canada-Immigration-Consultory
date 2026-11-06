@@ -54,6 +54,17 @@ describe("validación de respuestas reutilizables", () => {
     });
   });
 
+  it("valida los nuevos campos numéricos del IMM 0008", () => {
+    const result = sanitizeSubmission([personal], {
+      ...validPersonalAnswers(),
+      "personal-data.heightCentimetres": "no es un número",
+    });
+    expect(result).toEqual({
+      ok: false,
+      message: "Número inválido: Altura en centímetros",
+    });
+  });
+
   it("no guarda secciones de adultos para una persona menor de 18", () => {
     const result = sanitizeSubmission(
       [personal, criminal],

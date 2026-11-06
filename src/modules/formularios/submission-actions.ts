@@ -2,7 +2,7 @@
 
 import type { Prisma } from "@/generated/prisma/client";
 import { db } from "@/lib/db";
-import { FORM_SECTION_BY_KEY } from "./sections";
+import { resolveFormSections } from "./composition";
 import { readFormAccess } from "./access";
 import { findFormTemplateBySlug } from "./templates";
 import { sanitizeSubmission } from "./submission-validation";
@@ -27,9 +27,7 @@ export async function saveFormSubmission(
     };
   }
 
-  const sections = template.sectionKeys
-    .map((key) => FORM_SECTION_BY_KEY.get(key))
-    .filter((section) => section !== undefined);
+  const sections = resolveFormSections(template.sectionKeys);
   const sanitized = sanitizeSubmission(sections, answers);
   if (!sanitized.ok) return sanitized;
 

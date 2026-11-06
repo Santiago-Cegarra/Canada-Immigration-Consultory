@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { requireAdmin } from "@/modules/auth/guards";
+import { parseCompositionPart } from "@/modules/formularios/composition";
 import { FORM_SECTION_BY_KEY } from "@/modules/formularios/sections";
 import { listFormTemplates } from "@/modules/formularios/templates";
 
@@ -14,8 +15,8 @@ export default async function FormTemplatesPage() {
           <p className="font-label-md text-primary">BANCO REUTILIZABLE</p>
           <h1 className="mt-2 font-headline-lg text-3xl">Formularios</h1>
           <p className="mt-2 max-w-2xl text-on-surface-variant">
-            Cada formulario reutiliza bloques del cuestionario maestro. Las
-            preguntas no se duplican.
+            Cada formulario reutiliza bloques y preguntas del cuestionario
+            maestro. Las preguntas no se duplican.
           </p>
         </div>
         <Link
@@ -60,14 +61,27 @@ export default async function FormTemplatesPage() {
                 </p>
               )}
               <div className="mt-5 flex flex-wrap gap-2">
-                {template.sectionKeys.slice(0, 4).map((key) => (
-                  <span
-                    key={key}
-                    className="rounded-lg bg-primary-fixed px-2 py-1 text-xs text-on-primary-fixed-variant"
-                  >
-                    {FORM_SECTION_BY_KEY.get(key)?.title}
-                  </span>
-                ))}
+                {template.sectionKeys.slice(0, 4).map((key) => {
+                  const part = parseCompositionPart(key);
+                  const section =
+                    part && FORM_SECTION_BY_KEY.get(part.sectionKey);
+                  const item =
+                    part?.kind !== "section"
+                      ? section?.items.find(({ id }) => id === part?.itemId)
+                      : undefined;
+                  return (
+                    <span
+                      key={key}
+                      className="rounded-lg bg-primary-fixed px-2 py-1 text-xs text-on-primary-fixed-variant"
+                    >
+                      {part?.kind === "section"
+                        ? section?.title
+                        : item?.kind === "question"
+                          ? item.label
+                          : item?.title}
+                    </span>
+                  );
+                })}
                 {template.sectionKeys.length > 4 && (
                   <span className="rounded-lg bg-surface-container px-2 py-1 text-xs text-on-surface-variant">
                     +{template.sectionKeys.length - 4}
@@ -75,7 +89,7 @@ export default async function FormTemplatesPage() {
                 )}
               </div>
               <p className="mt-5 text-xs text-on-surface-variant">
-                {template.sectionKeys.length} secciones · Actualizado{" "}
+                {template.sectionKeys.length} elementos · Actualizado{" "}
                 {template.updatedAt.toLocaleDateString("es-CA")}
               </p>
             </Link>
@@ -94,7 +108,8 @@ export default async function FormTemplatesPage() {
               Todavía no hay formularios
             </h2>
             <p className="mt-2 text-on-surface-variant">
-              Crea el primero combinando las secciones del cuestionario maestro.
+              Crea el primero combinando bloques y preguntas del cuestionario
+              maestro.
             </p>
           </div>
         </div>
