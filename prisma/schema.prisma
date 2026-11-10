@@ -25,9 +25,24 @@ model User {
   // Relations for professional
   appointments  Appointment[] @relation("ProfessionalAppointments")
   formTokens    FormToken[]   @relation("ProfessionalTokens")
+  schedule      ProfessionalSchedule?
   
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
+}
+
+model ProfessionalSchedule {
+  id             String   @id @default(cuid())
+  professionalId String   @unique
+  professional   User     @relation(fields: [professionalId], references: [id], onDelete: Cascade)
+  title          String   @default("Consultor migratorio regulado (RCIC)")
+  timeZone       String   @default("America/Toronto")
+  weekdays       Int[]    @default([3])
+  startTimes     String[] @default(["09:30", "11:15", "14:30", "16:15", "18:00"])
+  active         Boolean  @default(true)
+
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 }
 
 model Account {
@@ -88,9 +103,21 @@ model Appointment {
   // Payment info
   stripeSessionId String?  @unique
   paymentStatus   PaymentStatus @default(PENDING)
+
+  // Rescheduling & notifications
+  rescheduleTokenHash     String?   @unique
+  rescheduleTokenEncrypted String?
+  rescheduledCount        Int       @default(0)
+  lastRescheduledAt       DateTime?
+  meetingUrl              String?
+  confirmationEmailSentAt DateTime?
+  reminderEmailId         String?
   
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
+
+  @@index([professionalId, startTime])
+  @@index([paymentStatus, startTime])
 }
 
 enum PaymentStatus {

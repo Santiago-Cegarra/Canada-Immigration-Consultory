@@ -8,7 +8,12 @@ import {
 } from "react";
 import { useRouter } from "next/navigation";
 import { type BookingFormState, startBooking } from "@/modules/citas/actions";
-import { type BookingDay, CONSULTATION } from "@/modules/citas/schedule";
+import type { PublicProfessionalSchedule } from "@/modules/citas/appointments";
+import {
+  type BookingDay,
+  CONSULTATION,
+  formatWeekdaysBanner,
+} from "@/modules/citas/schedule";
 import { agendarContent, BOOKING_TIME_ZONES } from "../../content/agendar";
 import { FormField } from "../ui/form-field";
 import { Icon } from "../ui/icon";
@@ -19,6 +24,7 @@ const INITIAL_STATE: BookingFormState = { status: "idle" };
 
 type BookingCheckoutProps = {
   days: readonly BookingDay[];
+  professionals?: readonly PublicProfessionalSchedule[];
   /** Precio formateado, p. ej. "$150.00 CAD". */
   price: string;
   /** Resumen de la compra (Server Component), arriba del formulario. */
@@ -61,7 +67,8 @@ function firstAvailableDay(days: readonly BookingDay[]): string | null {
  * por `useActionState`, que muestra los errores devueltos por el servidor.
  */
 export function BookingCheckout({
-  days,
+  days: initialDays,
+  professionals = [],
   price,
   summary,
   assurances,
@@ -72,6 +79,15 @@ export function BookingCheckout({
     INITIAL_STATE,
   );
   const { header, timeZone, calendar, form } = agendarContent;
+
+  const [selectedProfessionalId, setSelectedProfessionalId] = useState<string>(
+    () => professionals[0]?.professionalId ?? "default",
+  );
+  const activeProfessional =
+    professionals.find((p) => p.professionalId === selectedProfessionalId) ??
+    professionals[0];
+  const days = activeProfessional?.days ?? initialDays;
+  const activeWeekdays = activeProfessional?.weekdays ?? CONSULTATION.weekdays;
 
   const detectedTimeZone = useSyncExternalStore(
     noSubscription,
@@ -91,6 +107,16 @@ export function BookingCheckout({
   const [visibleMonth, setVisibleMonth] = useState(() =>
     (selectedDay ?? "").slice(0, 7),
   );
+
+  function selectProfessional(profId: string) {
+    setSelectedProfessionalId(profId);
+    const nextProf = professionals.find((p) => p.professionalId === profId);
+    const nextDays = nextProf?.days ?? initialDays;
+    const first = firstAvailableDay(nextDays);
+    setSelectedDay(first);
+    setSelectedSlot(null);
+    setVisibleMonth((first ?? "").slice(0, 7));
+  }
 
   // Si el horario elegido se ocupó (p. ej. otra persona lo pagó antes), deja
   // de contar como seleccionado en cuanto llega la disponibilidad nueva.
@@ -156,6 +182,30 @@ export function BookingCheckout({
           </p>
         </div>
 
+        {professionals.length > 1 && (
+          <div className="flex flex-col gap-2 rounded-xl border border-surface-container bg-surface-container-lowest p-4 sm:flex-row sm:items-center sm:justify-between">
+            <label
+              htmlFor="profesional-selector"
+              className="flex items-center gap-2 font-label-md text-label-md text-on-surface"
+            >
+              <Icon name="gavel" className="text-[20px] text-primary" />
+              Profesional
+            </label>
+            <select
+              id="profesional-selector"
+              value={selectedProfessionalId}
+              onChange={(event) => selectProfessional(event.target.value)}
+              className="rounded-lg border border-outline-variant bg-surface-container-lowest px-3 py-2 font-body-md text-body-md text-on-surface focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none"
+            >
+              {professionals.map((prof) => (
+                <option key={prof.professionalId} value={prof.professionalId}>
+                  {prof.name} ({prof.title})
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+
         <div className="flex flex-col gap-2 rounded-xl border border-surface-container bg-surface-container-lowest p-4 sm:flex-row sm:items-center sm:justify-between">
           <label
             htmlFor="zona-horaria"
@@ -190,10 +240,12 @@ export function BookingCheckout({
             />
             <p className="flex flex-col sm:flex-row sm:items-center sm:gap-2">
               <span className="font-label-md text-caption tracking-wide text-primary uppercase">
-                {calendar.banner}
+                {formatWeekdaysBanner(activeWeekdays)}
               </span>
               <span className="font-caption text-caption text-on-surface-variant">
-                {calendar.bannerDetail}
+                {activeProfessional
+                  ? `${activeProfessional.name} · ${activeProfessional.title}`
+                  : calendar.bannerDetail}
               </span>
             </p>
           </div>
@@ -208,7 +260,7 @@ export function BookingCheckout({
                 <MonthCalendar
                   month={visibleMonth}
                   days={monthDays}
-                  consultationWeekdays={CONSULTATION.weekdays}
+                  consultationWeekdays={activeWeekdays}
                   selectedDay={selectedDay}
                   onSelectDay={selectDay}
                   onPreviousMonth={
@@ -254,6 +306,11 @@ export function BookingCheckout({
             {form.title}
           </h2>
 
+          <input
+            type="hidden"
+            name="professionalId"
+            value={selectedProfessionalId}
+          />
           <input type="hidden" name="horario" value={activeSlot ?? ""} />
           <div
             className="flex items-start gap-3 rounded-lg bg-surface-container-low p-4"

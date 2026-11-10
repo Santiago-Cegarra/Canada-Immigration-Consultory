@@ -94,10 +94,22 @@ export default async function BookingConfirmationPage({
 
             <div className="flex w-full flex-col gap-3 pt-2 sm:flex-row">
               {result.status === "paid" && (
-                <ButtonLink
-                  action={{ label: text.backHome, href: "/" }}
-                  size="md"
-                />
+                <>
+                  <ButtonLink
+                    action={{ label: text.backHome, href: "/" }}
+                    size="md"
+                  />
+                  {result.rescheduleToken && (
+                    <ButtonLink
+                      action={{
+                        label: "Reprogramar cita",
+                        href: `/agendar/reprogramar?token=${encodeURIComponent(result.rescheduleToken)}`,
+                      }}
+                      variant="secondary"
+                      size="md"
+                    />
+                  )}
+                </>
               )}
               {result.status === "pending" && sessionId && (
                 <ButtonLink

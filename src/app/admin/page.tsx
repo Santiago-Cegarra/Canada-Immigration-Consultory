@@ -16,6 +16,58 @@ export default async function AdminDashboardPage() {
 
       <div className="mt-8 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
         <Link
+          href="/admin/citas"
+          className="group rounded-2xl border border-outline-variant/70 bg-surface-container-lowest p-6 shadow-sm transition hover:-translate-y-0.5 hover:border-primary/50 hover:shadow-md"
+        >
+          <span
+            className="material-symbols-outlined text-4xl text-primary"
+            aria-hidden="true"
+          >
+            calendar_month
+          </span>
+          <h2 className="mt-4 font-headline-md text-xl">Citas y reservas</h2>
+          <p className="mt-2 text-sm text-on-surface-variant">
+            Consulta las citas agendadas y pagadas, asigna enlaces de
+            videollamada y reprograma sesiones.
+          </p>
+          <span className="mt-5 inline-flex items-center gap-2 font-label-md text-primary">
+            Ver citas
+            <span
+              className="material-symbols-outlined transition group-hover:translate-x-1"
+              aria-hidden="true"
+            >
+              arrow_forward
+            </span>
+          </span>
+        </Link>
+        <Link
+          href="/admin/horarios"
+          className="group rounded-2xl border border-outline-variant/70 bg-surface-container-lowest p-6 shadow-sm transition hover:-translate-y-0.5 hover:border-primary/50 hover:shadow-md"
+        >
+          <span
+            className="material-symbols-outlined text-4xl text-primary"
+            aria-hidden="true"
+          >
+            schedule
+          </span>
+          <h2 className="mt-4 font-headline-md text-xl">
+            Horarios de consulta
+          </h2>
+          <p className="mt-2 text-sm text-on-surface-variant">
+            Configura los días, horas y zona horaria de referencia de cada
+            profesional.
+          </p>
+          <span className="mt-5 inline-flex items-center gap-2 font-label-md text-primary">
+            Configurar horarios
+            <span
+              className="material-symbols-outlined transition group-hover:translate-x-1"
+              aria-hidden="true"
+            >
+              arrow_forward
+            </span>
+          </span>
+        </Link>
+        <Link
           href="/admin/formularios"
           className="group rounded-2xl border border-outline-variant/70 bg-surface-container-lowest p-6 shadow-sm transition hover:-translate-y-0.5 hover:border-primary/50 hover:shadow-md"
         >

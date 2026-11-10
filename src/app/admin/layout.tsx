@@ -41,6 +41,18 @@ export default async function AdminLayout({ children }: LayoutProps<"/admin">) {
               <AdminIcon>dashboard</AdminIcon> Resumen
             </Link>
             <Link
+              href="/admin/citas"
+              className="inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm transition hover:bg-surface-container"
+            >
+              <AdminIcon>calendar_month</AdminIcon> Citas
+            </Link>
+            <Link
+              href="/admin/horarios"
+              className="inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm transition hover:bg-surface-container"
+            >
+              <AdminIcon>schedule</AdminIcon> Horarios
+            </Link>
+            <Link
               href="/admin/formularios"
               className="inline-flex items-center gap-2 rounded-lg px-3 py-2 text-sm transition hover:bg-surface-container"
             >

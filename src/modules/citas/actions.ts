@@ -6,11 +6,16 @@ import { createConsultationCheckout } from "@/modules/pagos/checkout";
 import { getStripe } from "@/modules/pagos/stripe";
 import {
   attachCheckoutSession,
+  findAppointmentByRescheduleToken,
+  getProfessionalConsultationConfig,
   markAppointmentFailed,
   NoProfessionalError,
+  RescheduleNotAllowedError,
+  rescheduleAppointment,
   reserveSlot,
   SlotUnavailableError,
 } from "./appointments";
+import { CONSULTATION } from "./schedule";
 import {
   type BookingErrors,
   type BookingField,
@@ -55,8 +60,20 @@ export async function startBooking(
   formData: FormData,
 ): Promise<BookingFormState> {
   const now = new Date();
-  const result = validateBooking(formData, now);
   const values = echoValues(formData);
+  const rawProfId = values.professionalId;
+
+  let config = CONSULTATION;
+  try {
+    const profConfig = await getProfessionalConsultationConfig(
+      rawProfId && rawProfId !== "default" ? rawProfId : null,
+    );
+    config = profConfig.config;
+  } catch {
+    // Si no hay profesional en BD todavía, se valida con CONSULTATION y fallará limpiamente al reservar.
+  }
+
+  const result = validateBooking(formData, now, config);
 
   if (!result.ok) return { status: "invalid", errors: result.errors, values };
 
@@ -125,4 +142,68 @@ export async function startBooking(
 
   // Fuera del try: `redirect` funciona lanzando una excepción especial.
   redirect(checkoutUrl);
+}
+
+export type RescheduleFormState =
+  | { status: "idle" }
+  | { status: "error"; message: string }
+  | { status: "success"; newStartIso: string };
+
+export async function rescheduleByClientAction(
+  _previousState: RescheduleFormState,
+  formData: FormData,
+): Promise<RescheduleFormState> {
+  const token = String(formData.get("token") ?? "").trim();
+  const horario = String(formData.get("horario") ?? "").trim();
+
+  if (!token) {
+    return { status: "error", message: "Enlace de reprogramación no válido." };
+  }
+  if (!horario) {
+    return {
+      status: "error",
+      message: "Elige un nuevo día y hora en el calendario.",
+    };
+  }
+
+  const newStart = new Date(horario);
+  if (Number.isNaN(newStart.getTime())) {
+    return {
+      status: "error",
+      message: "El horario seleccionado no es válido.",
+    };
+  }
+
+  const now = new Date();
+  const appointment = await findAppointmentByRescheduleToken(token, now);
+  if (!appointment) {
+    return {
+      status: "error",
+      message: "No encontramos una cita activa asociada a este enlace.",
+    };
+  }
+
+  try {
+    await rescheduleAppointment({
+      appointmentId: appointment.id,
+      newStart,
+      now,
+      byAdmin: false,
+    });
+    return { status: "success", newStartIso: newStart.toISOString() };
+  } catch (error) {
+    if (error instanceof SlotUnavailableError) {
+      return {
+        status: "error",
+        message: "Ese horario acaba de ocuparse. Por favor elige otro.",
+      };
+    }
+    if (error instanceof RescheduleNotAllowedError) {
+      return { status: "error", message: error.message };
+    }
+    return {
+      status: "error",
+      message: "No pudimos reprogramar tu cita. Inténtalo de nuevo.",
+    };
+  }
 }

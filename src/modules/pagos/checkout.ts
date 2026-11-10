@@ -3,11 +3,17 @@ import {
   findAppointmentByCheckoutSession,
   markAppointmentPaid,
 } from "@/modules/citas/appointments";
+import { decryptRescheduleToken } from "@/modules/citas/reschedule-crypto";
 import { CONSULTATION, formatSlotLong } from "@/modules/citas/schedule";
 import { getStripe } from "./stripe";
 
 export type CheckoutReturn =
-  | { status: "paid"; start: Date }
+  | {
+      status: "paid";
+      start: Date;
+      rescheduleToken: string | null;
+      professionalName: string;
+    }
   | { status: "pending"; start: Date }
   | { status: "not_found" };
 
@@ -31,7 +37,22 @@ export async function resolveCheckoutReturn(
   if (!appointment) return { status: "not_found" };
 
   const start = appointment.startTime;
-  if (appointment.paymentStatus === "PAID") return { status: "paid", start };
+  const professionalName =
+    appointment.professional.name ?? appointment.professional.email;
+  let rescheduleToken: string | null = null;
+  if (appointment.rescheduleTokenEncrypted) {
+    try {
+      rescheduleToken = decryptRescheduleToken(
+        appointment.rescheduleTokenEncrypted,
+      );
+    } catch {
+      rescheduleToken = null;
+    }
+  }
+
+  if (appointment.paymentStatus === "PAID") {
+    return { status: "paid", start, rescheduleToken, professionalName };
+  }
   if (appointment.paymentStatus === "FAILED") return { status: "not_found" };
 
   const stripe = getStripe();
@@ -40,7 +61,7 @@ export async function resolveCheckoutReturn(
       const session = await stripe.checkout.sessions.retrieve(sessionId);
       if (session.payment_status === "paid") {
         await markAppointmentPaid(appointment.id);
-        return { status: "paid", start };
+        return { status: "paid", start, rescheduleToken, professionalName };
       }
     } catch {
       // Si Stripe no responde, se muestra como pendiente y el webhook lo resolverá.

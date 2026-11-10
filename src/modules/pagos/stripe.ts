@@ -19,7 +19,6 @@ export function getStripe(): Stripe | null {
   return client;
 }
 
-
 export function getWebhookSecret(): string | null {
   const secret = process.env.STRIPE_WEBHOOK_SECRET;
   return isPlaceholder(secret) ? null : (secret as string);

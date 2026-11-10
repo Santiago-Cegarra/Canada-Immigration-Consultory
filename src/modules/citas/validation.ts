@@ -12,6 +12,7 @@ import {
 } from "./schedule";
 
 export type BookingRequest = {
+  professionalId: string | null;
   start: Date;
   nombre: string;
   email: string;
@@ -20,7 +21,7 @@ export type BookingRequest = {
 };
 
 export type BookingField =
-  "horario" | "nombre" | "email" | "telefono" | "politica";
+  "professionalId" | "horario" | "nombre" | "email" | "telefono" | "politica";
 
 export type BookingErrors = Partial<Record<BookingField, string>>;
 
@@ -43,6 +44,7 @@ export function validateBooking(
   now: Date,
   config: ConsultationConfig = CONSULTATION,
 ): BookingValidation {
+  const professionalId = readText(formData, "professionalId") || null;
   const horario = readText(formData, "horario");
   const nombre = readText(formData, "nombre");
   const email = readText(formData, "email").toLowerCase();
@@ -83,6 +85,12 @@ export function validateBooking(
 
   return {
     ok: true,
-    data: { start, nombre, email, telefono: telefono || null },
+    data: {
+      professionalId,
+      start,
+      nombre,
+      email,
+      telefono: telefono || null,
+    },
   };
 }

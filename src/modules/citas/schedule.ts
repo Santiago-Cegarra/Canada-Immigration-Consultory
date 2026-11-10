@@ -227,6 +227,43 @@ export function formatPrice(
   return `${amount} ${currency}`;
 }
 
+const WEEKDAY_NAMES_ES = [
+  "domingos",
+  "lunes",
+  "martes",
+  "miércoles",
+  "jueves",
+  "viernes",
+  "sábados",
+] as const;
+
+export function formatWeekdaysBanner(weekdays: readonly number[]): string {
+  const unique = [...new Set(weekdays)].filter((d) => d >= 0 && d <= 6);
+  if (unique.length === 0) return "Sin días configurados";
+  const ordered = [1, 2, 3, 4, 5, 6, 0].filter((d) => unique.includes(d));
+  const names = ordered.map((d) => WEEKDAY_NAMES_ES[d]);
+  if (names.length === 1) return `Días de consulta: ${names[0]}`;
+  const last = names[names.length - 1];
+  const rest = names.slice(0, -1).join(", ");
+  return `Días de consulta: ${rest} y ${last}`;
+}
+
+export function withProfessionalSchedule(
+  schedule: {
+    timeZone: string;
+    weekdays: readonly number[];
+    startTimes: readonly string[];
+  },
+  base: ConsultationConfig = CONSULTATION,
+): ConsultationConfig {
+  return {
+    ...base,
+    timeZone: schedule.timeZone || base.timeZone,
+    weekdays: schedule.weekdays,
+    startTimes: schedule.startTimes,
+  };
+}
+
 /** Fecha y hora largas en español, p. ej. "miércoles, 14 de octubre de 2026, 9:30". */
 export function formatSlotLong(start: Date, timeZone: string): string {
   return new Intl.DateTimeFormat("es", {

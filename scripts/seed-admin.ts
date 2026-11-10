@@ -47,7 +47,23 @@ async function main() {
     },
   });
 
-  console.log("Usuario admin creado/actualizado:", admin.email);
+  await db.professionalSchedule.upsert({
+    where: { professionalId: admin.id },
+    update: {},
+    create: {
+      professionalId: admin.id,
+      title: "Consultor migratorio regulado (RCIC)",
+      timeZone: "America/Toronto",
+      weekdays: [3],
+      startTimes: ["09:30", "11:15", "14:30", "16:15", "18:00"],
+      active: true,
+    },
+  });
+
+  console.log(
+    "Usuario admin y horario inicial creados/actualizados:",
+    admin.email,
+  );
 }
 
 main()
