@@ -10,7 +10,7 @@ export function Hero() {
   const [primaryAction, secondaryAction] = actions;
 
   return (
-    <section className="surface-dark relative -mt-20 flex min-h-[80vh] w-full items-center justify-center overflow-hidden pt-20">
+    <section className="surface-dark relative -mt-20 flex min-h-svh w-full items-center justify-center overflow-hidden pt-28 pb-14 md:min-h-[80vh] md:pt-20 md:pb-0">
       <div className="absolute inset-0 z-0">
         <Image
           src={image.src}
@@ -27,15 +27,12 @@ export function Hero() {
 
       <div className="relative z-10 mx-auto grid w-full max-w-page grid-cols-1 gap-gutter px-gutter md:grid-cols-12">
         <div className="flex flex-col items-start gap-6 md:col-span-8 lg:col-span-6">
-          <span className="rounded-full border border-surface-container-lowest/20 bg-surface-container-lowest/10 px-4 py-2 font-label-md text-label-md tracking-widest text-primary-fixed-dim uppercase backdrop-blur-sm">
+          <span className="rounded-[5px] border border-surface-container-lowest/20 bg-surface-container-lowest/10 px-4 py-2 font-label-md text-label-md tracking-widest text-primary uppercase backdrop-blur-sm">
             {eyebrow}
           </span>
 
-          <h1 className="font-display-lg text-[48px] leading-tight font-extrabold tracking-tight text-surface-container-lowest md:text-[64px]">
-            <HighlightedText
-              text={title}
-              emphasisClassName="text-primary-fixed-dim"
-            />
+          <h1 className="font-display-lg text-[48px] leading-tight font-extrabold tracking-tight text-white md:text-[64px]">
+            <HighlightedText text={title} emphasisClassName="text-primary" />
           </h1>
 
           <p className="max-w-xl font-body-lg text-body-lg text-surface-container-highest">
@@ -43,8 +40,16 @@ export function Hero() {
           </p>
 
           <div className="mt-4 flex w-full flex-col gap-4 sm:w-auto sm:flex-row">
-            <ButtonLink action={primaryAction} variant="primary" />
-            <ButtonLink action={secondaryAction} variant="outline" />
+            <ButtonLink
+              action={primaryAction}
+              variant="primary"
+              corners="subtle"
+            />
+            <ButtonLink
+              action={secondaryAction}
+              variant="outline"
+              corners="subtle"
+            />
           </div>
         </div>
       </div>

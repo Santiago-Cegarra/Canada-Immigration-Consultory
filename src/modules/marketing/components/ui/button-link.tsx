@@ -18,7 +18,12 @@ type ButtonVariant = "primary" | "secondary" | "outline" | "ghost";
 type ButtonSize = "sm" | "md" | "lg";
 
 const BASE_CLASSES =
-  "group flex items-center justify-center gap-2 rounded-lg text-center font-label-md text-label-md transition-all";
+  "group flex items-center justify-center gap-2 text-center font-label-md text-label-md transition-all";
+
+const CORNER_CLASSES = {
+  default: "rounded-lg",
+  subtle: "rounded-[5px]",
+} as const;
 
 const VARIANT_CLASSES: Record<ButtonVariant, string> = {
   primary:
@@ -51,6 +56,7 @@ type ButtonLinkProps = {
   action: CallToAction;
   variant?: ButtonVariant;
   size?: ButtonSize;
+  corners?: keyof typeof CORNER_CLASSES;
   className?: string;
 };
 
@@ -66,6 +72,7 @@ export function ButtonLink({
   action,
   variant = "primary",
   size = "lg",
+  corners = "default",
   className,
 }: ButtonLinkProps) {
   const { label, href, icon, iconPosition = "end" } = action;
@@ -76,6 +83,7 @@ export function ButtonLink({
       href={href}
       className={cn(
         BASE_CLASSES,
+        CORNER_CLASSES[corners],
         VARIANT_CLASSES[variant],
         SIZE_CLASSES[size],
         className,
