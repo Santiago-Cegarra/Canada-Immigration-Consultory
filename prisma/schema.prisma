@@ -96,6 +96,11 @@ model Appointment {
   clientName      String
   clientEmail     String
   clientPhone     String?
+
+  // Trámite desde el que el cliente llegó a reservar (`/agendar?servicio=<slug>`).
+  // Informativo: el título se guarda tal como estaba al reservar.
+  serviceSlug     String?
+  serviceTitle    String?
   
   startTime       DateTime
   endTime         DateTime

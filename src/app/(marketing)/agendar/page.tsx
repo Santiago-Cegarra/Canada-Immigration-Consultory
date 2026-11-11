@@ -8,6 +8,7 @@ import { BookingSteps } from "@/modules/marketing/components/sections/booking-st
 import { BookingSummary } from "@/modules/marketing/components/sections/booking-summary";
 import { Container } from "@/modules/marketing/components/ui/container";
 import { agendarContent } from "@/modules/marketing/content/agendar";
+import { findServiceBySlug, serviceLabel } from "@/modules/marketing/services";
 
 export const metadata: Metadata = agendarContent.seo;
 
@@ -16,8 +17,15 @@ export const metadata: Metadata = agendarContent.seo;
  * reserva, así que la página se genera en cada visita y nunca en el build.
  * Los textos se editan en `src/modules/marketing/content/agendar.ts`.
  */
-export default async function BookingPage() {
+export default async function BookingPage({
+  searchParams,
+}: PageProps<"/agendar">) {
   await connection();
+  // `?servicio=<slug>` llega desde la página de un trámite. Si el slug no
+  // existe se ignora: la reserva funciona igual, sin trámite asociado.
+  const { servicio } = await searchParams;
+  const service =
+    typeof servicio === "string" ? findServiceBySlug(servicio) : null;
   const now = new Date();
   const professionals = await loadBookableProfessionals(now);
   const firstProf = professionals[0];
@@ -33,6 +41,12 @@ export default async function BookingPage() {
             days={firstProf?.days ?? []}
             professionals={professionals}
             price={price}
+            service={
+              service && {
+                slug: service.process.slug,
+                title: serviceLabel(service),
+              }
+            }
             summary={<BookingSummary {...summary} price={price} />}
             assurances={
               <BookingAssurances

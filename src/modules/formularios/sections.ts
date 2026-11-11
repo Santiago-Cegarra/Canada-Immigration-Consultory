@@ -248,6 +248,78 @@ export const FORM_SECTIONS: readonly SectionDefinition[] = [
       question("csqAppliedAt", "Fecha en que solicitó el CSQ", "date", {
         visibleWhen: no("hasCsq"),
       }),
+      question("applicantRole", "Indique su rol en esta solicitud", "select", {
+        options: [
+          "Solicitante principal",
+          "Cónyuge, pareja de hecho o hijo/a mayor de edad del solicitante principal",
+        ],
+      }),
+      question(
+        "appliesToExtendStatus",
+        "¿Solicita extender su estatus en Canadá?",
+        "yes-no",
+      ),
+      question(
+        "appliesToRestoreStatus",
+        "¿Solicita restaurar su estatus en Canadá?",
+        "yes-no",
+      ),
+      question(
+        "appliesForNewTemporaryResidentPermit",
+        "¿Solicita un nuevo permiso de residencia temporal (por inadmisibilidad)?",
+        "yes-no",
+      ),
+      question(
+        "intendedStayDuration",
+        "Duración prevista de su estadía en Canadá",
+        "select",
+        {
+          options: ["Menos de 6 meses", "Más de 6 meses", "Permanentemente"],
+        },
+      ),
+      question("visitPurpose", "Propósito de su visita a Canadá", "select", {
+        options: [
+          "Turismo",
+          "Negocios",
+          "Visita familiar",
+          "Visita",
+          "Super Visa",
+          "Estudios cortos",
+          "Estudio",
+          "Trabajo",
+          "Estudiante que regresa",
+          "Trabajador que regresa",
+          "Otro",
+        ],
+      }),
+      question(
+        "visitFrom",
+        "Fecha desde la que planea estar en Canadá",
+        "date",
+      ),
+      question("visitTo", "Fecha hasta la que planea estar en Canadá", "date"),
+      question(
+        "stayFundsCad",
+        "Fondos disponibles para su estadía en Canadá, en dólares canadienses",
+        "number",
+      ),
+      question("expensesPaidBy", "¿Quién cubrirá sus gastos en Canadá?"),
+      repeatable(
+        "visitContacts",
+        "Personas o instituciones que visitará en Canadá",
+        [
+          question("name", "Nombre de la persona o institución", "text", {
+            required: true,
+          }),
+          question("relationship", "Relación con usted"),
+          question("address", "Dirección en Canadá"),
+        ],
+      ),
+      question(
+        "hasFamilyInCanada",
+        "¿Tiene algún familiar (cónyuge, pareja o hijo/a) que sea ciudadano o residente permanente de Canadá?",
+        "yes-no",
+      ),
       question(
         "hasDependants",
         "¿Incluye dependientes en esta solicitud?",
@@ -710,6 +782,55 @@ export const FORM_SECTIONS: readonly SectionDefinition[] = [
         required: true,
         visibleWhen: no("applyingFromCurrentCountry"),
       }),
+      question(
+        "hasTravelHistory",
+        "Desde los 18 años o durante los últimos 5 años (lo que sea más reciente), ¿ha viajado a algún país o territorio distinto de su país de nacionalidad o de residencia actual?",
+        "yes-no",
+        { required: true },
+      ),
+      repeatable(
+        "trips",
+        "Viajes anteriores",
+        [
+          question("from", "Desde", "date", { required: true }),
+          question("to", "Hasta", "date", { required: true }),
+          question("destination", "País y lugar visitado", "text", {
+            required: true,
+          }),
+          question("purpose", "Motivo del viaje", "text", { required: true }),
+        ],
+        { visibleWhen: yes("hasTravelHistory"), minimumItems: 1 },
+      ),
+      question(
+        "currentlyInCanada",
+        "¿Se encuentra actualmente en Canadá?",
+        "yes-no",
+      ),
+      question(
+        "firstCanadaEntryDate",
+        "Fecha de su primera entrada a Canadá",
+        "date",
+      ),
+      question("firstCanadaEntryPlace", "Lugar de su primera entrada a Canadá"),
+      question(
+        "originalEntryPurpose",
+        "Propósito inicial de su entrada a Canadá",
+        "select",
+        {
+          options: [
+            "Negocios",
+            "Turismo",
+            "Estudio",
+            "Trabajo",
+            "Visita familiar",
+            "Otro",
+          ],
+        },
+      ),
+      question(
+        "latestPermitNumber",
+        "Número de su visa, permiso de trabajo, permiso de estudio o permiso de residencia temporal más reciente, si aplica",
+      ),
     ],
   },
   {
@@ -729,6 +850,11 @@ export const FORM_SECTIONS: readonly SectionDefinition[] = [
       ),
       question("partnerGivenNames", "Nombres de su esposo/a o pareja"),
       question("partnerSurnames", "Apellidos de su esposo/a o pareja"),
+      question(
+        "partnerIsCanadianCitizenOrPr",
+        "¿Su esposo/a o pareja es ciudadano/a o residente permanente de Canadá?",
+        "yes-no",
+      ),
     ],
   },
   {
@@ -911,6 +1037,11 @@ export const FORM_SECTIONS: readonly SectionDefinition[] = [
       question("homePostalCode", "Código postal", "text", { required: true }),
       question("homeDistrict", "Distrito, si corresponde"),
       question(
+        "homeAddressSince",
+        "Fecha desde la que vive en esta dirección",
+        "date",
+      ),
+      question(
         "sameMailingAddress",
         "¿Su dirección para recibir correspondencia es la misma?",
         "yes-no",
@@ -1081,6 +1212,56 @@ export const FORM_SECTIONS: readonly SectionDefinition[] = [
         required: true,
         visibleWhen: yes("hasPostSecondaryEducation"),
       }),
+      repeatable(
+        "additionalStudies",
+        "Otros estudios postsecundarios",
+        [
+          question("from", "Fecha de inicio", "month", { required: true }),
+          question("to", "Fecha de finalización o indique “En curso”", "text", {
+            required: true,
+          }),
+          question("program", "Programa o área de estudio", "text", {
+            required: true,
+          }),
+          question("institution", "Nombre de la institución", "text", {
+            required: true,
+          }),
+          question("city", "Ciudad", "text", { required: true }),
+          question("region", "Provincia o estado", "text", { required: true }),
+          question("country", "País", "text", { required: true }),
+        ],
+        { visibleWhen: yes("hasPostSecondaryEducation") },
+      ),
+      question(
+        "plannedSchoolName",
+        "Nombre de la institución donde estudiará en Canadá",
+      ),
+      question("plannedStudyLevel", "Nivel de estudios que cursará"),
+      question("plannedStudyField", "Programa o área de estudio que cursará"),
+      question("plannedSchoolAddress", "Dirección de la institución"),
+      question(
+        "plannedSchoolProvince",
+        "Provincia o territorio de la institución",
+      ),
+      question("plannedSchoolCity", "Ciudad de la institución"),
+      question(
+        "dliNumber",
+        "Número de institución de enseñanza designada (DLI)",
+      ),
+      question("studentNumber", "Número de estudiante"),
+      question("plannedStudyFrom", "Fecha de inicio de clases", "date"),
+      question("plannedStudyTo", "Fecha de fin de clases", "date"),
+      question(
+        "tuitionCost",
+        "Costo del curso o programa, en dólares canadienses",
+        "number",
+      ),
+      question(
+        "roomAndBoardCost",
+        "Costo de alojamiento y alimentación, si aplica, en dólares canadienses",
+        "number",
+      ),
+      question("otherCosts", "Otros costos, en dólares canadienses", "number"),
     ],
   },
   {
@@ -1109,6 +1290,47 @@ export const FORM_SECTIONS: readonly SectionDefinition[] = [
           question("country", "País", "text", { required: true }),
         ],
         { minimumItems: 1 },
+      ),
+      question(
+        "workPermitType",
+        "Tipo de permiso de trabajo que solicita",
+        "select",
+        {
+          options: [
+            "LMIA (Evaluación de Impacto en el Mercado Laboral)",
+            "Exención de LMIA",
+            "Permiso de trabajo abierto",
+            "Permiso de trabajo posgraduación (PGWP)",
+            "Otro",
+          ],
+        },
+      ),
+      question("plannedEmployerName", "Nombre del empleador en Canadá"),
+      question("plannedEmployerAddress", "Dirección del empleador"),
+      question(
+        "plannedWorkLocation",
+        "Dirección del lugar donde trabajará en Canadá",
+      ),
+      question("plannedWorkProvince", "Provincia o territorio donde trabajará"),
+      question("plannedWorkCity", "Ciudad donde trabajará"),
+      question(
+        "plannedJobDuties",
+        "Describa brevemente las funciones del puesto",
+        "textarea",
+      ),
+      question(
+        "plannedWorkFrom",
+        "Fecha prevista de inicio del empleo",
+        "date",
+      ),
+      question(
+        "plannedWorkTo",
+        "Fecha prevista de finalización del empleo",
+        "date",
+      ),
+      question(
+        "lmiaOrOfferNumber",
+        "Número de LMIA o de la oferta de empleo (exenta de LMIA)",
       ),
     ],
   },
@@ -1144,6 +1366,12 @@ export const FORM_SECTIONS: readonly SectionDefinition[] = [
             ],
           },
         },
+      ),
+      question(
+        "medicalExamLast12Months",
+        "En los últimos 12 meses, ¿se ha realizado un examen médico con un médico autorizado por IRCC (panel physician)?",
+        "yes-no",
+        { required: true },
       ),
     ],
   },
@@ -1296,6 +1524,18 @@ export const FORM_SECTIONS: readonly SectionDefinition[] = [
           },
         },
       ),
+      question(
+        "heldGovernmentPosition",
+        "¿Ha ocupado algún cargo público o gubernamental (por ejemplo: juez, policía, alcalde, parlamentario o administrador de hospital)?",
+        "yes-no",
+        { required: true },
+      ),
+      question(
+        "governmentPositionDetails",
+        "Indique cargo y funciones, nivel de jurisdicción, departamento, país y fechas",
+        "textarea",
+        { required: true, visibleWhen: yes("heldGovernmentPosition") },
+      ),
     ],
   },
   {
@@ -1334,6 +1574,18 @@ export const FORM_SECTIONS: readonly SectionDefinition[] = [
         { required: true },
       ),
       question("completedAt", "Fecha", "date", { required: true }),
+      question("referralSource", "¿Cómo se enteró de nosotros?", "select", {
+        options: [
+          "Facebook",
+          "Instagram",
+          "Google o sitio web",
+          "Un amigo o conocido",
+          "Otro",
+        ],
+      }),
+      question("referralSourceOther", "Indique cómo se enteró", "text", {
+        visibleWhen: { fieldId: "referralSource", equals: "Otro" },
+      }),
     ],
   },
 ] satisfies readonly SectionDefinition[];

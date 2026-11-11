@@ -124,6 +124,7 @@ export const agendarContent = {
   form: {
     title: "Tus datos",
     slotLabel: "Tu horario",
+    serviceLabel: "Motivo de la consulta",
     slotMissing: "Elige un día y una hora en el calendario.",
     nameLabel: "Nombre completo",
     emailLabel: "Correo electrónico",

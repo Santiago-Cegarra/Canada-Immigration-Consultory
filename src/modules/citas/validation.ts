@@ -18,10 +18,21 @@ export type BookingRequest = {
   email: string;
   /** Opcional: el cliente puede dejarlo en blanco. */
   telefono: string | null;
+  /**
+   * Slug del trámite desde el que se llegó a reservar (`?servicio=<slug>`), o
+   * `null`. Aquí solo se comprueba la forma; quien reserva decide si existe.
+   */
+  servicio: string | null;
 };
 
 export type BookingField =
-  "professionalId" | "horario" | "nombre" | "email" | "telefono" | "politica";
+  | "professionalId"
+  | "horario"
+  | "nombre"
+  | "email"
+  | "telefono"
+  | "politica"
+  | "servicio";
 
 export type BookingErrors = Partial<Record<BookingField, string>>;
 
@@ -33,6 +44,9 @@ const MAX_LENGTH = { nombre: 120, email: 254, telefono: 30 } as const;
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 /** Dígitos con separadores habituales y `+` inicial opcional. */
 const PHONE_PATTERN = /^\+?[\d\s().-]{7,}$/;
+/** Misma forma que los slugs de `content/servicios.ts`. */
+const SERVICE_SLUG_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+const MAX_SERVICE_SLUG_LENGTH = 100;
 
 function readText(formData: FormData, field: BookingField): string {
   const value = formData.get(field);
@@ -50,6 +64,13 @@ export function validateBooking(
   const email = readText(formData, "email").toLowerCase();
   const telefono = readText(formData, "telefono");
   const politica = readText(formData, "politica");
+  // Informativo: un valor raro se descarta en vez de bloquear la reserva.
+  const rawServicio = readText(formData, "servicio");
+  const servicio =
+    rawServicio.length <= MAX_SERVICE_SLUG_LENGTH &&
+    SERVICE_SLUG_PATTERN.test(rawServicio)
+      ? rawServicio
+      : null;
 
   const errors: BookingErrors = {};
   const start = new Date(horario);
@@ -91,6 +112,7 @@ export function validateBooking(
       nombre,
       email,
       telefono: telefono || null,
+      servicio,
     },
   };
 }

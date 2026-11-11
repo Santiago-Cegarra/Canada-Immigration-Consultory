@@ -103,6 +103,12 @@ export default async function AdminCitasPage() {
                       {apt.clientEmail}
                       {apt.clientPhone ? ` · ${apt.clientPhone}` : ""}
                     </p>
+                    {apt.serviceTitle && (
+                      <p className="mt-1 text-sm text-on-surface">
+                        <span className="font-semibold">Trámite:</span>{" "}
+                        {apt.serviceTitle}
+                      </p>
+                    )}
                   </div>
 
                   <div className="text-left sm:text-right">

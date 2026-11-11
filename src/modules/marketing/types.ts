@@ -34,6 +34,7 @@ export type MaterialSymbol =
   | "error"
   | "event_available"
   | "event_busy"
+  | "expand_more"
   | "family_restroom"
   | "flight_takeoff"
   | "gavel"
@@ -127,28 +128,29 @@ export type FooterLinkGroup = {
 };
 
 /**
- * Categorías de programa. Unión cerrada, como `MaterialSymbol`: un programa solo
- * puede apuntar a una categoría que exista. Para añadir una, se añade aquí y se
- * define en `content/servicios.ts` (TypeScript obliga a ambas cosas).
+ * Un trámite concreto dentro de una categoría de servicios. Tiene su propia
+ * página en `/servicios/<categoria>/<proceso>`.
  */
-export type ProgramCategoryId =
-  "residencia" | "estudio" | "trabajo" | "familia";
-
-export type ProgramCategory = {
-  id: ProgramCategoryId;
-  label: string;
-  icon: MaterialSymbol;
+export type ServiceProcess = {
+  /** Único en TODO el catálogo: también viaja en `/agendar?servicio=<slug>`. */
+  slug: string;
+  title: string;
+  /** Descripción corta, 1–2 frases. */
+  summary: string;
+  /** "¿Para quién es?", 1–2 frases. */
+  audience: string;
+  /** "Qué incluye nuestra asesoría", 3–4 viñetas. */
+  includes: readonly string[];
 };
 
-/** Un programa migratorio o de estudio del catálogo de servicios. */
-export type Program = {
-  icon: MaterialSymbol;
-  category: ProgramCategory;
+/** Una categoría de servicios: una tarjeta del catálogo con sus trámites. */
+export type ServiceCategory = {
+  slug: string;
   title: string;
-  description: string;
-  image: ImageAsset;
-  /** Página de detalle del programa. */
-  href: string;
+  icon: MaterialSymbol;
+  /** `null` mientras falte la foto: la tarjeta usa un fondo de marca. */
+  image: ImageAsset | null;
+  processes: readonly ServiceProcess[];
 };
 
 /** Argumento de venta con icono, título y texto corto. */

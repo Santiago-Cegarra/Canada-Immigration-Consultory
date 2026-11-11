@@ -67,4 +67,17 @@ describe("validateBooking", () => {
     expect(result.ok).toBe(false);
     if (!result.ok) expect(result.errors.telefono).toBeDefined();
   });
+
+  it("conserva el trámite elegido y descarta uno mal formado sin bloquear", () => {
+    const readService = (overrides: Record<string, string>) => {
+      const result = validateBooking(buildForm(overrides), now);
+      expect(result.ok).toBe(true);
+      return result.ok ? result.data.servicio : undefined;
+    };
+
+    expect(readService({})).toBeNull();
+    expect(readService({ servicio: "pgwp" })).toBe("pgwp");
+    expect(readService({ servicio: "<script>alert(1)</script>" })).toBeNull();
+    expect(readService({ servicio: "a".repeat(101) })).toBeNull();
+  });
 });

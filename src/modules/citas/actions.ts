@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { getBaseUrl } from "@/lib/base-url";
+import { findServiceBySlug, serviceLabel } from "@/modules/marketing/services";
 import { createConsultationCheckout } from "@/modules/pagos/checkout";
 import { getStripe } from "@/modules/pagos/stripe";
 import {
@@ -87,9 +88,20 @@ export async function startBooking(
     };
   }
 
+  // El slug viene del navegador: solo se guarda si es un trámite del catálogo.
+  const service = result.data.servicio
+    ? findServiceBySlug(result.data.servicio)
+    : null;
+
   let appointmentId: string;
   try {
-    ({ id: appointmentId } = await reserveSlot(result.data, now));
+    ({ id: appointmentId } = await reserveSlot(
+      result.data,
+      now,
+      service
+        ? { slug: service.process.slug, title: serviceLabel(service) }
+        : null,
+    ));
   } catch (error) {
     if (error instanceof SlotUnavailableError) {
       return {

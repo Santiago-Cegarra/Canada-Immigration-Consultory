@@ -32,8 +32,19 @@ export type AppointmentEmailDetails = {
   startTime: Date;
   durationMinutes?: number;
   meetingUrl?: string | null;
+  /** Trámite por el que se reservó la consulta, si el cliente llegó desde uno. */
+  serviceTitle?: string | null;
   rescheduleToken: string;
 };
+
+/** Los correos son HTML: un texto con `<` o `&` no debe leerse como marcado. */
+function escapeHtml(text: string): string {
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
 
 const HOUR_MS = 60 * 60 * 1000;
 const DAY_MS = 24 * HOUR_MS;
@@ -91,6 +102,11 @@ export async function sendAppointmentConfirmationAndScheduleReminder(
     ? `<p style="margin:16px 0;"><a href="${details.meetingUrl}" style="display:inline-block;background-color:#1b1b1f;color:#ffffff;text-decoration:none;padding:12px 20px;border-radius:8px;font-weight:600;font-size:14px;">Entrar a la videollamada</a></p>`
     : `<p style="margin:16px 0;font-size:14px;color:#44474e;">El enlace de la videollamada te será enviado por tu consultor antes de la sesión.</p>`;
 
+  const serviceBlock = details.serviceTitle
+    ? `<p style="margin:12px 0 4px;font-size:13px;color:#5e5e62;">Motivo de la consulta</p>
+        <p style="margin:0;font-size:15px;font-weight:600;">${escapeHtml(details.serviceTitle)}</p>`
+    : "";
+
   const html = renderEmailShell(
     "Tu consulta migratoria está confirmada",
     `
@@ -103,6 +119,7 @@ export async function sendAppointmentConfirmationAndScheduleReminder(
         <p style="margin:0 0 12px;font-size:16px;font-weight:600;">${formattedDate} (${details.timeZone})</p>
         <p style="margin:0 0 4px;font-size:13px;color:#5e5e62;">Profesional asignado</p>
         <p style="margin:0;font-size:15px;font-weight:600;">${details.professionalName} · <span style="font-weight:400;color:#5e5e62;">${details.professionalTitle}</span></p>
+        ${serviceBlock}
       </div>
       ${meetingBlock}
       <p style="margin:20px 0 8px;font-size:14px;color:#44474e;">
