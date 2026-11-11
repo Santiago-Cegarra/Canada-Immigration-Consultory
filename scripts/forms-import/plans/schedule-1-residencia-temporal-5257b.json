@@ -1,0 +1,17 @@
+{
+  "name": "Schedule 1 - Aplicación para Residencia Temporal - 5257b",
+  "slug": "schedule-1-residencia-temporal-5257b",
+  "description": "Help Immigration Canada\nSi una pregunta no se aplica a su caso, responda N/A o déjelo en blanco.\nSi tiene alguna pregunta sobre cómo responderla, háganoslo saber.\nResponda estas preguntas lo mejor que pueda.",
+  "status": "DRAFT",
+  "sectionKeys": [
+    "q:personal-data:givenNames",
+    "q:personal-data:surnames",
+    "q:personal-data:birthDate",
+    "q:personal-data:irccUci",
+    "q:personal-data:applicantRole",
+    "military-police-service",
+    "organizations-background",
+    "q:residence-status:hasTravelHistory",
+    "g:residence-status:trips"
+  ]
+}

@@ -31,6 +31,8 @@ type BookingCheckoutProps = {
   summary: React.ReactNode;
   /** Preguntas frecuentes y garantías (Server Component), bajo el calendario. */
   assurances: React.ReactNode;
+  /** Trámite desde el que se llegó a reservar (`/agendar?servicio=<slug>`). */
+  service?: { slug: string; title: string } | null;
 };
 
 /*
@@ -72,6 +74,7 @@ export function BookingCheckout({
   price,
   summary,
   assurances,
+  service = null,
 }: BookingCheckoutProps) {
   const router = useRouter();
   const [state, formAction, pending] = useActionState(
@@ -312,6 +315,25 @@ export function BookingCheckout({
             value={selectedProfessionalId}
           />
           <input type="hidden" name="horario" value={activeSlot ?? ""} />
+          {service && (
+            <>
+              <input type="hidden" name="servicio" value={service.slug} />
+              <div className="flex items-start gap-3 rounded-lg bg-surface-container-low p-4">
+                <Icon
+                  name="description"
+                  className="mt-0.5 shrink-0 text-[20px] text-primary"
+                />
+                <div className="flex flex-col">
+                  <span className="font-label-md text-label-md text-on-surface">
+                    {form.serviceLabel}
+                  </span>
+                  <span className="font-body-md text-body-md text-on-surface-variant">
+                    {service.title}
+                  </span>
+                </div>
+              </div>
+            </>
+          )}
           <div
             className="flex items-start gap-3 rounded-lg bg-surface-container-low p-4"
             aria-live="polite"

@@ -42,6 +42,7 @@ export async function listAdminAppointments() {
       clientName: apt.clientName,
       clientEmail: apt.clientEmail,
       clientPhone: apt.clientPhone,
+      serviceTitle: apt.serviceTitle,
       startTime: apt.startTime,
       endTime: apt.endTime,
       paymentStatus: apt.paymentStatus,

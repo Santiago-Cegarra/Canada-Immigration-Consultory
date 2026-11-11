@@ -1,0 +1,1339 @@
+{
+  "gaps": {},
+  "notes": {
+    "status": "Lista de estatus distinta a la del banco.",
+    "list2text": "Lista cerrada en Google; texto libre en el banco.",
+    "sex": "Opciones distintas: Male/Female/Other frente a F/M/U/X.",
+    "couple": "Una fecha en Google; el banco separa fecha de matrimonio y de inicio de unión de hecho.",
+    "former": "Apellido y nombre separados en Google; un solo campo en el banco.",
+    "comfort": "En Google se pregunta siempre; en el banco solo si respondió 'Ambos'.",
+    "process": "Opción cerrada en Google; texto libre en el banco.",
+    "overstay": "Una pregunta en Google; tres separadas en el banco.",
+    "refusal": "Una pregunta en Google; dos separadas en el banco.",
+    "incidents": "Un párrafo libre en Google; en el banco es un registro estructurado por cada respuesta afirmativa.",
+    "pobox": "El banco solo tiene apartado postal en la dirección postal.",
+    "birthplace": "Google pide 'lugar de nacimiento'; el banco separa ciudad y país.",
+    "military": "Registro estructurado en Google (fechas, país, lugar); un solo campo de texto en el banco.",
+    "orgs": "Registro estructurado en Google (fechas, país, lugar, detalles); un solo campo de texto en el banco.",
+    "repeat": "El grupo repetible del banco ya permite añadir más registros.",
+    "uci": "El banco pregunta el UCI directamente ('si lo conoce'); la pregunta previa Sí/No no hace falta.",
+    "occupation": "Google pregunta el puesto del empleo previsto; el banco, la ocupación prevista en Canadá.",
+    "phoneType": "Opciones equivalentes con otro texto (Residential/Cellular/Work frente a Celular/Casa/Trabajo).",
+    "civil": "Opciones de estado civil con otro texto; el banco añade 'Matrimonio anulado'.",
+    "official": "Sí/No en Google; el banco pregunta Inglés/Francés/Ambos/Ninguno.",
+    "gov": "Registro estructurado en Google (fechas, país, nivel, departamento, cargo); un solo campo de texto en el banco.",
+    "duration": "La duración se deduce de las fechas del viaje.",
+    "entry": "Una pregunta de texto en Google; dos en el banco (fecha y lugar).",
+    "checkbox": "Casillas de selección múltiple en Google; una pregunta Sí/No por opción en el banco.",
+    "province": "Google pregunta la provincia de destino de la visita; el banco, la provincia donde planea vivir.",
+    "contact": "Un párrafo libre en Google; el banco separa nombre, relación y dirección.",
+    "options": "Opciones equivalentes con otro texto."
+  },
+  "rules": [
+    [
+      "details of the visit",
+      "^purpose",
+      {
+        "to": ["personal-data.visitPurpose"],
+        "partial": "options"
+      }
+    ],
+    [
+      "details of the visit",
+      "^since when",
+      {
+        "to": ["personal-data.visitFrom"]
+      }
+    ],
+    [
+      "details of the visit",
+      "^until",
+      {
+        "to": ["personal-data.visitTo"]
+      }
+    ],
+    [
+      "details of the visit",
+      "^funds available",
+      {
+        "to": ["personal-data.stayFundsCad"]
+      }
+    ],
+    [
+      "details of the visit",
+      "expenses will be covered",
+      {
+        "to": ["personal-data.expensesPaidBy"],
+        "partial": "list2text"
+      }
+    ],
+    [
+      "details of the visit",
+      "destination province",
+      {
+        "to": ["personal-data.intendedProvince"],
+        "partial": "province"
+      }
+    ],
+    [
+      "details of the visit",
+      "^name address and relationship",
+      {
+        "to": [
+          "personal-data.visitContacts.name",
+          "personal-data.visitContacts.relationship",
+          "personal-data.visitContacts.address"
+        ],
+        "partial": "contact"
+      }
+    ],
+    [
+      "details of the visit",
+      "^name of (any|another) person",
+      {
+        "to": ["personal-data.visitContacts.name"]
+      }
+    ],
+    [
+      "details of the visit",
+      "^relationship with you",
+      {
+        "to": ["personal-data.visitContacts.relationship"]
+      }
+    ],
+    [
+      "details of the visit",
+      "^canadian address",
+      {
+        "to": ["personal-data.visitContacts.address"]
+      }
+    ],
+    [
+      "planned study",
+      "^name of school",
+      {
+        "to": ["education.plannedSchoolName"]
+      }
+    ],
+    [
+      "planned study",
+      "^level of study",
+      {
+        "to": ["education.plannedStudyLevel"]
+      }
+    ],
+    [
+      "planned study",
+      "^field of study",
+      {
+        "to": ["education.plannedStudyField"]
+      }
+    ],
+    [
+      "planned study",
+      "^school s address",
+      {
+        "to": ["education.plannedSchoolAddress"]
+      }
+    ],
+    [
+      "planned study",
+      "^province",
+      {
+        "to": ["education.plannedSchoolProvince"]
+      }
+    ],
+    [
+      "planned study",
+      "^city",
+      {
+        "to": ["education.plannedSchoolCity"]
+      }
+    ],
+    [
+      "planned study",
+      "designated learning institution",
+      {
+        "to": ["education.dliNumber"]
+      }
+    ],
+    [
+      "planned study",
+      "^student number",
+      {
+        "to": ["education.studentNumber"]
+      }
+    ],
+    [
+      "planned study",
+      "^class start",
+      {
+        "to": ["education.plannedStudyFrom"]
+      }
+    ],
+    [
+      "planned study",
+      "^class end",
+      {
+        "to": ["education.plannedStudyTo"]
+      }
+    ],
+    [
+      "planned study",
+      "^course or program cost",
+      {
+        "to": ["education.tuitionCost"]
+      }
+    ],
+    [
+      "planned study",
+      "^cost of accommodation",
+      {
+        "to": ["education.roomAndBoardCost"]
+      }
+    ],
+    [
+      "planned study",
+      "^other costs",
+      {
+        "to": ["education.otherCosts"]
+      }
+    ],
+    [
+      "planned study",
+      "^funds available",
+      {
+        "to": ["personal-data.stayFundsCad"]
+      }
+    ],
+    [
+      "planned study",
+      "^who will pay",
+      {
+        "to": ["personal-data.expensesPaidBy"]
+      }
+    ],
+    [
+      "work planned",
+      "job title position of intended employment",
+      {
+        "to": ["education.intendedOccupation"],
+        "partial": "occupation"
+      }
+    ],
+    [
+      "work planned",
+      "type of work permit",
+      {
+        "to": ["employment-activities.workPermitType"],
+        "partial": "options"
+      }
+    ],
+    [
+      "work planned",
+      "^name of employer",
+      {
+        "to": ["employment-activities.plannedEmployerName"]
+      }
+    ],
+    [
+      "work planned",
+      "^address of employer",
+      {
+        "to": ["employment-activities.plannedEmployerAddress"]
+      }
+    ],
+    [
+      "work planned",
+      "^location of intended employment",
+      {
+        "to": ["employment-activities.plannedWorkLocation"]
+      }
+    ],
+    [
+      "work planned",
+      "^state province",
+      {
+        "to": ["employment-activities.plannedWorkProvince"]
+      }
+    ],
+    [
+      "work planned",
+      "^city",
+      {
+        "to": ["employment-activities.plannedWorkCity"]
+      }
+    ],
+    [
+      "work planned",
+      "position duties",
+      {
+        "to": ["employment-activities.plannedJobDuties"]
+      }
+    ],
+    [
+      "work planned",
+      "^planned start date",
+      {
+        "to": ["employment-activities.plannedWorkFrom"]
+      }
+    ],
+    [
+      "work planned",
+      "^expected date of termination",
+      {
+        "to": ["employment-activities.plannedWorkTo"]
+      }
+    ],
+    [
+      "work planned",
+      "^lmia",
+      {
+        "to": ["employment-activities.lmiaOrOfferNumber"]
+      }
+    ],
+    [
+      "arrival (in|to) canada",
+      "(most recent|last) entry (in)?to canada",
+      {
+        "to": ["residence-status.lastCanadaEntryDate"]
+      },
+      "DATE"
+    ],
+    [
+      "arrival (in|to) canada",
+      "place of your (most recent|last) entry",
+      {
+        "to": ["residence-status.lastCanadaEntryPlace"]
+      }
+    ],
+    [
+      "arrival (in|to) canada",
+      "^date of (your )?first entry",
+      {
+        "to": ["residence-status.firstCanadaEntryDate"]
+      }
+    ],
+    [
+      "arrival (in|to) canada",
+      "^place of first entry",
+      {
+        "to": ["residence-status.firstCanadaEntryPlace"]
+      }
+    ],
+    [
+      "arrival (in|to) canada",
+      "^initial purpose",
+      {
+        "to": ["residence-status.originalEntryPurpose"],
+        "partial": "options"
+      }
+    ],
+    [
+      "arrival (in|to) canada",
+      "^document number",
+      {
+        "to": ["residence-status.latestPermitNumber"]
+      }
+    ],
+    [
+      "personal information",
+      "reason for your application",
+      {
+        "to": [
+          "personal-data.appliesToExtendStatus",
+          "personal-data.appliesToRestoreStatus",
+          "personal-data.appliesForNewTemporaryResidentPermit"
+        ],
+        "partial": "checkbox"
+      }
+    ],
+    [
+      "^(travel|travels|viaje|trip|previous travel|previous travels|previous trips)$",
+      "another trip|add another travel",
+      {
+        "absorbed": "repeat"
+      }
+    ],
+    [
+      "^(travel|travels|viaje|trip|previous travel|previous travels|previous trips)$",
+      "travel duration",
+      {
+        "absorbed": "duration"
+      }
+    ],
+    [
+      "^(travel|travels|viaje|trip|previous travel|previous travels|previous trips)$",
+      "^(since|from)$",
+      {
+        "to": ["residence-status.trips.from"]
+      }
+    ],
+    [
+      "^(travel|travels|viaje|trip|previous travel|previous travels|previous trips)$",
+      "^(until|to)$",
+      {
+        "to": ["residence-status.trips.to"]
+      }
+    ],
+    [
+      "^(travel|travels|viaje|trip|previous travel|previous travels|previous trips)$",
+      "^(country|destination)",
+      {
+        "to": ["residence-status.trips.destination"]
+      }
+    ],
+    [
+      "^(travel|travels|viaje|trip|previous travel|previous travels|previous trips)$",
+      "^purpose",
+      {
+        "to": ["residence-status.trips.purpose"]
+      }
+    ],
+    [
+      "^government positions?$",
+      "another government position",
+      {
+        "absorbed": "repeat"
+      }
+    ],
+    [
+      "^government positions?$",
+      "have you (belonged|held|been)",
+      {
+        "to": ["organizations-background.heldGovernmentPosition"]
+      }
+    ],
+    [
+      "^government positions?$",
+      ".",
+      {
+        "to": ["organizations-background.governmentPositionDetails"],
+        "partial": "gov"
+      }
+    ],
+    [
+      "military service",
+      "did you serve",
+      {
+        "to": ["military-police-service.hasMilitaryPoliceService"]
+      }
+    ],
+    [
+      "military service",
+      "other military service",
+      {
+        "absorbed": "military"
+      }
+    ],
+    [
+      "military service",
+      ".",
+      {
+        "to": ["military-police-service.militaryPoliceDetails"],
+        "partial": "military"
+      }
+    ],
+    [
+      "^event$",
+      "do you have another event",
+      {
+        "absorbed": "orgs"
+      }
+    ],
+    [
+      "^event$",
+      ".",
+      {
+        "to": ["organizations-background.organizationsBackgroundDetails"],
+        "partial": "orgs"
+      }
+    ],
+    [
+      "membership association",
+      "any other political party",
+      {
+        "absorbed": "orgs"
+      }
+    ],
+    [
+      "membership association",
+      ".",
+      {
+        "to": ["organizations-background.organizationsBackgroundDetails"],
+        "partial": "orgs"
+      }
+    ],
+    [
+      "^(names?|personal details|personal information questions)$",
+      "^(last name|surname|family name)",
+      {
+        "to": ["personal-data.surnames"]
+      }
+    ],
+    [
+      "^(names?|personal details|personal information questions)$",
+      "^(names?|given names)( same|$)",
+      {
+        "to": ["personal-data.givenNames"]
+      }
+    ],
+    [
+      ".",
+      "have you (ever )?had any other names?",
+      {
+        "to": ["personal-data.hasOtherNames"]
+      }
+    ],
+    [
+      "other name",
+      "indicate (what is )?your other name",
+      {
+        "to": ["personal-data.otherNames"]
+      }
+    ],
+    [
+      ".",
+      "^do you have an? (icu|uci) number",
+      {
+        "absorbed": "uci"
+      }
+    ],
+    [
+      ".",
+      "^uci number",
+      {
+        "to": ["personal-data.irccUci"]
+      }
+    ],
+    [
+      "personal information",
+      "^(gender|sex)$",
+      {
+        "to": ["personal-data.documentSex"],
+        "partial": "sex"
+      }
+    ],
+    [
+      "personal information",
+      "^(birthdate|date of birth)$",
+      {
+        "to": ["personal-data.birthDate"]
+      }
+    ],
+    [
+      "personal information",
+      "^place of birth$",
+      {
+        "to": ["personal-data.birthCity"],
+        "partial": "birthplace"
+      }
+    ],
+    [
+      "personal information",
+      "type of visa requested",
+      {
+        "to": ["personal-data.desiredProcess"],
+        "partial": "process"
+      }
+    ],
+    [
+      "personal information",
+      "^indicate if you are",
+      {
+        "to": ["personal-data.applicantRole"]
+      }
+    ],
+    [
+      "personal information",
+      "^legal status in that country",
+      {
+        "to": ["residence-status.currentStatus"],
+        "partial": "status"
+      }
+    ],
+    [
+      "personal information|temporary residence period",
+      "^(since|from)( when)?$",
+      {
+        "to": ["residence-status.currentStatusFrom"]
+      }
+    ],
+    [
+      "personal information|temporary residence period",
+      "^(even when|until|to)$",
+      {
+        "to": ["residence-status.currentStatusExpiry"]
+      }
+    ],
+    [
+      "residence in the last",
+      "(resided|lived) in (other )?countries",
+      {
+        "to": ["residence-status.livedInOtherCountry"]
+      }
+    ],
+    [
+      "previous countr(y|ies) of residence",
+      "^country",
+      {
+        "to": ["residence-status.previousCountries.country"]
+      }
+    ],
+    [
+      "previous countr(y|ies) of residence",
+      "legal status|estatus legal",
+      {
+        "to": ["residence-status.previousCountries.status"],
+        "partial": "status"
+      }
+    ],
+    [
+      "previous countr(y|ies) of residence",
+      "^(since|from)",
+      {
+        "to": ["residence-status.previousCountries.from"]
+      }
+    ],
+    [
+      "previous countr(y|ies) of residence",
+      "^(even when|until|to)",
+      {
+        "to": ["residence-status.previousCountries.to"]
+      }
+    ],
+    [
+      "country where applying|country of appl",
+      "same as (the )?current country",
+      {
+        "to": ["residence-status.applyingFromCurrentCountry"]
+      }
+    ],
+    [
+      "different (application country|country of application)|application country other",
+      "^country",
+      {
+        "to": ["residence-status.applicationCountry"]
+      }
+    ],
+    [
+      "different (application country|country of application)|application country other",
+      "legal status",
+      {
+        "to": ["residence-status.applicationCountryStatus"],
+        "partial": "list2text"
+      }
+    ],
+    [
+      "different (application country|country of application)|application country other",
+      "^(since|from)",
+      {
+        "to": ["residence-status.applicationCountryFrom"]
+      }
+    ],
+    [
+      "different (application country|country of application)|application country other",
+      "^(even when|until|to)",
+      {
+        "to": ["residence-status.applicationCountryTo"]
+      }
+    ],
+    [
+      "husband or wife|^spouse partner information|spouse s or partner s data|spouse common law partner information",
+      "since when",
+      {
+        "to": ["civil-status.marriageDate", "civil-status.commonLawSince"],
+        "partial": "couple"
+      }
+    ],
+    [
+      "husband or wife|^spouse partner information|spouse s or partner s data|spouse common law partner information",
+      "last name|family name|surname",
+      {
+        "to": ["civil-status.partnerSurnames"]
+      }
+    ],
+    [
+      "husband or wife|^spouse partner information|spouse s or partner s data|spouse common law partner information",
+      "^(first )?name of spouse",
+      {
+        "to": ["civil-status.partnerGivenNames"]
+      }
+    ],
+    [
+      "husband or wife|^spouse partner information|spouse s or partner s data|spouse common law partner information",
+      "citizen or permanent resident of canada",
+      {
+        "to": ["civil-status.partnerIsCanadianCitizenOrPr"]
+      }
+    ],
+    [
+      "previous (status|relationships|marital status)",
+      "married before|previously married",
+      {
+        "to": ["previous-relationships.hadPreviousRelationship"]
+      }
+    ],
+    [
+      "spouse or previous spouse|spouse or previous partner|previous spouse s information|information of the previous",
+      "last name|surname|^(first )?name of spouse",
+      {
+        "to": [
+          "previous-relationships.previousRelationships.formerPartnerName"
+        ],
+        "partial": "former"
+      }
+    ],
+    [
+      "spouse or previous spouse|spouse or previous partner|previous spouse s information|information of the previous",
+      "^(birthdate|date of birth)$",
+      {
+        "to": ["previous-relationships.previousRelationships.birthDate"]
+      }
+    ],
+    [
+      "spouse or previous spouse|spouse or previous partner|previous spouse s information|information of the previous",
+      "relationship",
+      {
+        "to": ["previous-relationships.previousRelationships.relationshipType"]
+      }
+    ],
+    [
+      "spouse or previous spouse|spouse or previous partner|previous spouse s information|information of the previous",
+      "^(since|from)$",
+      {
+        "to": ["previous-relationships.previousRelationships.startDate"]
+      }
+    ],
+    [
+      "spouse or previous spouse|spouse or previous partner|previous spouse s information|information of the previous",
+      "^(until|to|hasta)$",
+      {
+        "to": ["previous-relationships.previousRelationships.endDate"]
+      }
+    ],
+    [
+      "language",
+      "native language",
+      {
+        "to": ["languages.nativeLanguage"],
+        "partial": "list2text"
+      }
+    ],
+    [
+      "language",
+      "(most|more) comfortable",
+      {
+        "to": ["languages.preferredOfficialLanguage"],
+        "partial": "comfort"
+      }
+    ],
+    [
+      "passport",
+      "country (of issue|where it was issued)",
+      {
+        "to": ["passport.passportCountry"]
+      }
+    ],
+    [
+      "passport",
+      "issue date|date it was issued",
+      {
+        "to": ["passport.passportIssuedAt"]
+      }
+    ],
+    [
+      "passport",
+      "expiry date|expiration date",
+      {
+        "to": ["passport.passportExpiresAt"]
+      }
+    ],
+    [
+      "national identity",
+      "do you have a national identity",
+      {
+        "to": ["national-id.hasNationalId"]
+      }
+    ],
+    [
+      "national identity",
+      "document number",
+      {
+        "to": ["national-id.nationalIdNumber"]
+      }
+    ],
+    [
+      "national identity",
+      "country (of issue|where it was issued)",
+      {
+        "to": ["national-id.nationalIdCountry"]
+      }
+    ],
+    [
+      "national identity",
+      "issue date|date it was issued",
+      {
+        "to": ["national-id.nationalIdIssuedAt"]
+      }
+    ],
+    [
+      "national identity",
+      "expiry date|expiration date",
+      {
+        "to": ["national-id.nationalIdExpiresAt"]
+      }
+    ],
+    [
+      "us pr card",
+      "(lawful|legal) permanent resident",
+      {
+        "to": ["us-permanent-residence.hasValidGreenCard"]
+      }
+    ],
+    [
+      "us pr card",
+      "document number",
+      {
+        "to": ["us-permanent-residence.greenCardNumber"]
+      }
+    ],
+    [
+      "us pr card",
+      "due date|expiry date|expiration date",
+      {
+        "to": ["us-permanent-residence.greenCardExpiresAt"]
+      }
+    ],
+    [
+      "^(postal|mailing) address",
+      "p o box",
+      {
+        "to": ["address-contact.mailingPoBox"]
+      }
+    ],
+    [
+      "^(postal|mailing) address",
+      "(house|unit) or (unit|apartment) number",
+      {
+        "to": ["address-contact.mailingUnit"]
+      }
+    ],
+    [
+      "^(postal|mailing) address",
+      "street number",
+      {
+        "to": ["address-contact.mailingStreetNumber"]
+      }
+    ],
+    [
+      "^(postal|mailing) address",
+      "street name|name of the street",
+      {
+        "to": ["address-contact.mailingStreet"]
+      }
+    ],
+    [
+      "^(postal|mailing) address",
+      "^city",
+      {
+        "to": ["address-contact.mailingCity"]
+      }
+    ],
+    [
+      "^(postal|mailing) address",
+      "^country",
+      {
+        "to": ["address-contact.mailingCountry"]
+      }
+    ],
+    [
+      "^(postal|mailing) address",
+      "state|province",
+      {
+        "to": ["address-contact.mailingRegion"]
+      }
+    ],
+    [
+      "^(postal|mailing) address",
+      "postal code",
+      {
+        "to": ["address-contact.mailingPostalCode"]
+      }
+    ],
+    [
+      "^(postal|mailing) address",
+      "distri",
+      {
+        "to": ["address-contact.mailingDistrict"]
+      }
+    ],
+    [
+      "^(residence|residential) address|^contact information",
+      "p o box",
+      {
+        "to": ["address-contact.mailingPoBox"],
+        "partial": "pobox"
+      }
+    ],
+    [
+      "^(residence|residential) address|^contact information",
+      "(house|unit) or (unit|apartment) number",
+      {
+        "to": ["address-contact.homeUnit"]
+      }
+    ],
+    [
+      "^(residence|residential) address|^contact information",
+      "street number",
+      {
+        "to": ["address-contact.homeStreetNumber"]
+      }
+    ],
+    [
+      "^(residence|residential) address|^contact information",
+      "street name|name of the street",
+      {
+        "to": ["address-contact.homeStreet"]
+      }
+    ],
+    [
+      "^(residence|residential) address|^contact information",
+      "^city",
+      {
+        "to": ["address-contact.homeCity"]
+      }
+    ],
+    [
+      "^(residence|residential) address|^contact information",
+      "^country",
+      {
+        "to": ["address-contact.homeCountry"]
+      }
+    ],
+    [
+      "^(residence|residential) address|^contact information",
+      "^(estate province|state|province)",
+      {
+        "to": ["address-contact.homeRegion"]
+      }
+    ],
+    [
+      "^(residence|residential) address|^contact information",
+      "postal code",
+      {
+        "to": ["address-contact.homePostalCode"]
+      }
+    ],
+    [
+      "^(residence|residential) address|^contact information",
+      "^distri",
+      {
+        "to": ["address-contact.homeDistrict"]
+      }
+    ],
+    [
+      ".",
+      "when did you start living in this address",
+      {
+        "to": ["address-contact.homeAddressSince"]
+      }
+    ],
+    [
+      ".",
+      "residential address the same as (the|your) mailing address",
+      {
+        "to": ["address-contact.sameMailingAddress"]
+      }
+    ],
+    [
+      "contact information",
+      "^(telephone|phone) number",
+      {
+        "to": ["address-contact.primaryPhone"]
+      }
+    ],
+    [
+      "contact information",
+      "^alternat",
+      {
+        "to": ["address-contact.alternatePhone"]
+      }
+    ],
+    [
+      "contact information",
+      "^fax",
+      {
+        "to": ["address-contact.fax"]
+      }
+    ],
+    [
+      "contact information",
+      "^e ?mail",
+      {
+        "to": ["address-contact.email"]
+      }
+    ],
+    [
+      "contact information",
+      "^type$",
+      {
+        "to": ["address-contact.primaryPhoneType"],
+        "partial": "phoneType"
+      }
+    ],
+    [
+      "contact information",
+      "are you currently in canada",
+      {
+        "to": ["residence-status.currentlyInCanada"]
+      }
+    ],
+    [
+      "^education$",
+      "post ?secondary education",
+      {
+        "to": ["education.hasPostSecondaryEducation"]
+      }
+    ],
+    [
+      "post sec[ou]ndary education",
+      "^(since|from)$",
+      {
+        "to": ["education.highestStudyFrom"],
+        "onceTo": ["education.additionalStudies.from"]
+      }
+    ],
+    [
+      "post sec[ou]ndary education",
+      "^(until|to)$",
+      {
+        "to": ["education.highestStudyTo"],
+        "onceTo": ["education.additionalStudies.to"]
+      }
+    ],
+    [
+      "post sec[ou]ndary education",
+      "degree|title|field",
+      {
+        "to": ["education.highestProgram"],
+        "onceTo": ["education.additionalStudies.program"]
+      }
+    ],
+    [
+      "post sec[ou]ndary education",
+      "school",
+      {
+        "to": ["education.highestInstitution"],
+        "onceTo": ["education.additionalStudies.institution"]
+      }
+    ],
+    [
+      "post sec[ou]ndary education",
+      "^city",
+      {
+        "to": ["education.highestStudyCity"],
+        "onceTo": ["education.additionalStudies.city"]
+      }
+    ],
+    [
+      "post sec[ou]ndary education",
+      "^country",
+      {
+        "to": ["education.highestStudyCountry"],
+        "onceTo": ["education.additionalStudies.country"]
+      }
+    ],
+    [
+      "post sec[ou]ndary education",
+      "state|province",
+      {
+        "to": ["education.highestStudyRegion"],
+        "onceTo": ["education.additionalStudies.region"]
+      }
+    ],
+    [
+      "^(employ|job)",
+      "another previous job",
+      {
+        "absorbed": "repeat"
+      }
+    ],
+    [
+      "^(employ|job)",
+      "^(since|from)$",
+      {
+        "to": ["employment-activities.activities.from"]
+      }
+    ],
+    [
+      "^(employ|job)",
+      "^(until|to)$",
+      {
+        "to": ["employment-activities.activities.to"]
+      }
+    ],
+    [
+      "^(employ|job)",
+      "occupation|job title|position",
+      {
+        "to": ["employment-activities.activities.position"]
+      }
+    ],
+    [
+      "^(employ|job)",
+      "employer|company",
+      {
+        "to": ["employment-activities.activities.organization"]
+      }
+    ],
+    [
+      "^(employ|job)",
+      "^city",
+      {
+        "to": ["employment-activities.activities.city"]
+      }
+    ],
+    [
+      "^(employ|job)",
+      "^country",
+      {
+        "to": ["employment-activities.activities.country"]
+      }
+    ],
+    [
+      "^(employ|job)",
+      "state|provi|privince",
+      {
+        "to": ["employment-activities.activities.region"]
+      }
+    ],
+    [
+      ".",
+      "trave(l|led) to (another|a) country",
+      {
+        "to": ["residence-status.hasTravelHistory"]
+      }
+    ],
+    [
+      ".",
+      "tuberculosis",
+      {
+        "to": ["health.tuberculosis"]
+      }
+    ],
+    [
+      ".",
+      "physical or mental",
+      {
+        "to": ["health.needsHealthServices"]
+      }
+    ],
+    [
+      ".",
+      "overstayed|remained beyond",
+      {
+        "to": [
+          "immigration-history.canadaOverstay",
+          "immigration-history.unauthorizedStudy",
+          "immigration-history.unauthorizedWork"
+        ],
+        "partial": "overstay"
+      }
+    ],
+    [
+      ".",
+      "denied a visa",
+      {
+        "to": [
+          "immigration-history.visaRefusal",
+          "immigration-history.entryRefusalOrRemoval"
+        ],
+        "partial": "refusal"
+      }
+    ],
+    [
+      ".",
+      "previously applied to enter",
+      {
+        "to": ["immigration-history.previousCanadaApplication"]
+      }
+    ],
+    [
+      ".",
+      "committed been arrested",
+      {
+        "to": ["criminal-history.hasCriminalHistory"]
+      }
+    ],
+    [
+      ".",
+      "military militia",
+      {
+        "to": ["military-police-service.hasMilitaryPoliceService"]
+      }
+    ],
+    [
+      ".",
+      "political party",
+      {
+        "to": ["organizations-background.violentOrganizationAssociation"]
+      }
+    ],
+    [
+      ".",
+      "mistreatment",
+      {
+        "to": ["organizations-background.witnessedOrParticipatedInAbuse"]
+      }
+    ],
+    [
+      ".",
+      "government position",
+      {
+        "to": ["organizations-background.heldGovernmentPosition"]
+      }
+    ],
+    [
+      ".",
+      "medical exam",
+      {
+        "to": ["health.medicalExamLast12Months"]
+      }
+    ],
+    [
+      ".",
+      "find out about us|hear about us",
+      {
+        "to": ["additional-information.referralSource"],
+        "partial": "options"
+      }
+    ],
+    [
+      ".",
+      "family.*citizen or permanent resident of canada",
+      {
+        "to": ["personal-data.hasFamilyInCanada"]
+      }
+    ],
+    [
+      ".",
+      "duration of your stay",
+      {
+        "to": ["personal-data.intendedStayDuration"]
+      }
+    ],
+    [
+      ".",
+      "^city of birth",
+      {
+        "to": ["personal-data.birthCity"]
+      }
+    ],
+    [
+      ".",
+      "^country of birth",
+      {
+        "to": ["personal-data.birthCountry"]
+      }
+    ],
+    [
+      ".",
+      "^citizenship",
+      {
+        "to": ["personal-data.nationalities"]
+      }
+    ],
+    [
+      ".",
+      "^other citizenship",
+      {
+        "to": ["personal-data.secondCitizenship"]
+      }
+    ],
+    [
+      ".",
+      "^current country of residence",
+      {
+        "to": ["residence-status.currentResidenceCountry"]
+      }
+    ],
+    [
+      ".",
+      "^current marital status",
+      {
+        "to": ["civil-status.civilStatus"],
+        "partial": "civil"
+      }
+    ],
+    [
+      ".",
+      "^heigh",
+      {
+        "to": ["personal-data.heightCentimetres"]
+      }
+    ],
+    [
+      ".",
+      "^eye colou?r",
+      {
+        "to": ["personal-data.eyeColour"]
+      }
+    ],
+    [
+      "language",
+      "can you communicate in english or french",
+      {
+        "to": ["languages.officialLanguages"],
+        "partial": "official"
+      }
+    ],
+    [
+      "language",
+      "test from a designated",
+      {
+        "to": ["languages.hasLanguageTest"]
+      }
+    ],
+    [
+      "passport",
+      "^passport number",
+      {
+        "to": ["passport.passportNumber"]
+      }
+    ],
+    [
+      "personal information",
+      "purpose for coming to canada",
+      {
+        "to": ["personal-data.desiredProcess"],
+        "partial": "process"
+      }
+    ],
+    [
+      "personal information",
+      "date and place of your last entry",
+      {
+        "to": [
+          "residence-status.lastCanadaEntryDate",
+          "residence-status.lastCanadaEntryPlace"
+        ],
+        "partial": "entry"
+      }
+    ],
+    [
+      "^name$",
+      "^name( same|$)",
+      {
+        "to": ["personal-data.givenNames"]
+      }
+    ],
+    [
+      "general information|security information|background",
+      "provide details|^details$",
+      {
+        "inherit": true
+      }
+    ]
+  ]
+}

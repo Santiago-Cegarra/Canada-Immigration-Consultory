@@ -224,6 +224,8 @@ export async function loadBookableProfessionals(
 export async function reserveSlot(
   request: BookingRequest,
   now: Date = new Date(),
+  /** Trámite del catálogo ya verificado por quien llama, si lo hay. */
+  service: { slug: string; title: string } | null = null,
 ): Promise<{ id: string; rescheduleToken: string }> {
   const targetId =
     request.professionalId && request.professionalId !== "default"
@@ -260,6 +262,8 @@ export async function reserveSlot(
             clientName: request.nombre,
             clientEmail: request.email,
             clientPhone: request.telefono,
+            serviceSlug: service?.slug ?? null,
+            serviceTitle: service?.title ?? null,
             startTime: request.start,
             endTime: consultationEnd(request.start, config),
             rescheduleTokenHash,
@@ -363,6 +367,7 @@ export async function markAppointmentPaid(
       timeZone,
       startTime: appointment.startTime,
       meetingUrl: appointment.meetingUrl,
+      serviceTitle: appointment.serviceTitle,
       rescheduleToken,
     });
 

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { EvaluationCta } from "@/modules/marketing/components/sections/evaluation-cta";
-import { ProgramCatalog } from "@/modules/marketing/components/sections/program-catalog";
+import { ServiceCatalog } from "@/modules/marketing/components/sections/service-catalog";
 import { ServicesHeader } from "@/modules/marketing/components/sections/services-header";
 import { WhyChooseUs } from "@/modules/marketing/components/sections/why-choose-us";
 import { PageBackdrop } from "@/modules/marketing/components/ui/page-backdrop";
@@ -18,11 +18,27 @@ export const metadata: Metadata = serviciosContent.seo;
 export default function ServicesPage() {
   const { header, catalog, whyChooseUs, cta } = serviciosContent;
 
+  // El catálogo es Client Component: solo recibe lo que pinta en las tarjetas,
+  // no los textos completos de los 55 trámites.
+  const categories = catalog.categories.map(({ processes, ...category }) => ({
+    ...category,
+    processes: processes.map(({ slug, title, summary }) => ({
+      slug,
+      title,
+      summary,
+    })),
+  }));
+
   return (
     <div className="relative isolate flex w-full flex-col">
       <PageBackdrop />
       <ServicesHeader {...header} />
-      <ProgramCatalog {...catalog} />
+      <ServiceCatalog
+        categories={categories}
+        countLabel={catalog.countLabel}
+        closeLabel={catalog.closeLabel}
+        listLabel={catalog.listLabel}
+      />
       <WhyChooseUs {...whyChooseUs} />
       <EvaluationCta {...cta} />
     </div>
